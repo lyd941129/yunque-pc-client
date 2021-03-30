@@ -8,7 +8,7 @@
 					{{loginData.default_company.name}}<i class="el-icon-arrow-down el-icon--right"></i>
 				</span>
 				<el-dropdown-menu slot="dropdown">
-					<el-dropdown-item v-for="(item, index) in enterpriseList" :disabled="item.id == loginData.default_company.id" :command="item.id">{{item.name}}</el-dropdown-item>
+					<el-dropdown-item v-for="(item, index) in enterpriseList" :key="index" :disabled="item.id == loginData.default_company.id" :command="item.id">{{item.name}}</el-dropdown-item>
 				</el-dropdown-menu>
 			</el-dropdown>
 			<el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" @select="handleSelect">
@@ -83,6 +83,7 @@
 				adhibitionArrData: [],
 				loading: false,
 				enterpriseList: [],
+				addNum: '2'
 			}
 		},
 		computed:{
@@ -194,13 +195,14 @@
 				}
 				that.editableTabs.push({
 					title: objData.app_name,
-					name: that.editableTabs.length + 1 + '',
+					name: that.addNum + '',
 					type: objData.type ? objData.type : 'Applicationsettings',
 					app_id: objData.app_id,
 					ca_id: objData.ca_id,
 					lengthNum:  that.editableTabs.length
 				});
-				that.editableTabsValue = that.editableTabs.length + '';
+				that.editableTabsValue = that.addNum + '';
+				that.addNum = ++that.addNum;
 			},
 			handleSelect(key, keyPath) {
 				// console.log(key, keyPath);
