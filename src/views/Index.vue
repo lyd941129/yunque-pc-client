@@ -56,6 +56,7 @@
 	import Applicationsettings from '../components/Applicationsettings.vue';
 	import Personnelmanagement from '../components/Personnelmanagement.vue';
 	import Divisionalmanagement from '../components/Divisionalmanagement.vue';
+	import Basicdata from '../components/Basicdata/Basicdata.vue';
 	import axios from 'axios';
 	export default {
 		components: {
@@ -68,6 +69,7 @@
 			Applicationsettings,
 			Personnelmanagement,
 			Divisionalmanagement,
+			Basicdata
 		},
 		data() {
 			return {
@@ -432,6 +434,7 @@
 					width: 100%;
 					height: 100%;
 					overflow: hidden;
+					// display: flex;
 					.tac {
 						width: 200px;
 						display: inline-block;

@@ -1,6 +1,6 @@
 <!-- 应用设置组件 -->
 <template>
-	<div class="enterprise-box">
+	<div class="enterprise-box dis-flex">
 		<el-row class="tac">
 			<el-col :span="12">
 				<el-menu :default-active="adhibition" class="el-menu-vertical-demo" @select="handlAdhibition">
@@ -212,5 +212,12 @@
 	}
 </script>
 
-<style>
+<style lang="less" scoped>
+	.table-box {
+			height: calc(100% - 104px);
+			&.table-box-btn{
+				height: calc(100% - 164px);
+				margin-top: 20px;
+			}
+		}
 </style>

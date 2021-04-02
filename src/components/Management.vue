@@ -30,13 +30,9 @@
 		</div>
 		<h5>企业数据</h5>
 		<div class="surface">
-			<div class="surface-box">
-				<i class="icon icon-statistics"></i>
-				<span>成员使用统计</span>
-			</div>
-			<div class="surface-box">
-				<i class="icon icon-operation"></i>
-				<span>管理员操作记录</span>
+			<div class="surface-box" v-for="(item,index) in companyData" :key="index" @click="adhibitionFun(item)">
+				<i :class="['icon',item.icon]"></i>
+				<span>{{item.app_name}}</span>
 			</div>
 		</div>
 		<h5>订单续费</h5>
@@ -86,8 +82,29 @@
 						icon: 'icon-projectfirst',
 						app_id: "xmgl",
 						type: 'Personnelmanagement'
-					},
+					}
 				],
+				// 企业数据
+				companyData: [
+					{
+						app_name: '成员使用统计',
+						icon: 'icon-statistics',
+						app_id: "",
+						type: 'statistics'
+					},
+					{
+						app_name: '管理员操作记录',
+						icon: 'icon-operation',
+						app_id: "",
+						type: 'operation'
+					},
+					{
+						app_name: '基础数据管理',
+						icon: 'icon-basicdata',
+						app_id: "",
+						type: 'Basicdata'
+					}
+				]
 			}
 		},
 		created() {
