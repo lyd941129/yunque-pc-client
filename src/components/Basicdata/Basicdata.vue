@@ -14,7 +14,8 @@
             
             <el-form :inline="true" :model="searchLists" class="demo-form-inline">
                 <el-form-item label="关键字">
-                    <el-input v-model="searchLists.dict_label" placeholder="关键字搜索" clearable></el-input>
+                    <!-- 回车时触发 -->
+                    <el-input type="text" @keyup.enter.native="onScreen" v-model="searchLists.dict_label" prefix-icon="el-icon-search" placeholder="关键字搜索" clearable></el-input>
                 </el-form-item>
                 <el-form-item>
                     <el-button @click="onScreen">确认筛选</el-button>
@@ -31,7 +32,11 @@
                     <el-table-column type="selection" width="55"></el-table-column>
                     <el-table-column label="排序" prop="dict_sort" align="center"></el-table-column>
                     <el-table-column label="数据名称" prop="dict_label" align="center"></el-table-column>
-                    <el-table-column label="是否用户自定义" prop="is_user_defined" align="center"></el-table-column>
+                    <el-table-column label="是否用户自定义" prop="is_user_defined" align="center">
+                        <template slot-scope="scope">
+                            <div>{{scope.row.is_user_defined ? '是' : '否'}}</div>
+                        </template>
+                    </el-table-column>
                     <el-table-column label="创建时间" prop="create_time" align="center">
                         <template slot-scope="scope">
                             <div>{{scope.row.create_time ? getLocalTime(scope.row.create_time) : ''}}</div>
