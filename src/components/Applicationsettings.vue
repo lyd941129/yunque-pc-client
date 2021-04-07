@@ -17,8 +17,8 @@
 			<Flow :selectData="fieldSelect" :flowData="getSet.flow.flow_set" :sysCode="getSet.sys_code" :formConfigData="getSet.formConfig" 
 			:selectDataDispose="jurisdictionExample" v-show="adhibition === 'flow'"></Flow>
 			<Advanced :advData.sync="getSet.base" v-show="adhibition === 'advanced'"></Advanced>
-			<MsgTemplate :selectData="fieldSelect" :templateData="getSet.head" :searchData="getSet.search" searchJudge="yes" v-show="adhibition === 'search'"></MsgTemplate>
-			<MsgTemplate :selectData="fieldSelect" :templateData="getSet.template" searchJudge="no" v-show="adhibition === 'msg'"></MsgTemplate>
+			<MsgTemplate key="search" :selectData="fieldSelect" :templateData="getSet.head" :searchData="getSet.search" searchJudge="yes" v-show="adhibition === 'search'"></MsgTemplate>
+			<MsgTemplate key="msg" :selectData="fieldSelect" :templateData="getSet.template" searchJudge="no" v-show="adhibition === 'msg'"></MsgTemplate>
 		</div>
 	</div>
 </template>
