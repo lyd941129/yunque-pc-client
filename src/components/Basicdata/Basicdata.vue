@@ -47,6 +47,12 @@
                             <div>{{scope.row.update_time ? getLocalTime(scope.row.update_time) : ''}}</div>
                         </template>
                     </el-table-column>
+                    
+                    <el-table-column label="最近修改人" prop="handler_user" align="center">
+                        <template slot-scope="scope">
+                            <div>{{scope.row.handler_user.username}}</div>
+                        </template>
+                    </el-table-column>
                 </el-table>
             </div>
             <el-pagination @current-change="searchFn" :current-page="searchLists.page" @size-change="sizeChange"
