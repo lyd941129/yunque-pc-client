@@ -513,9 +513,9 @@
 		},
 		computed: {
 			activeUsers: function () {
-				let arr = this.formData.filter(function (user) {
+				let arr = this.formData ? this.formData.filter(function (user) {
 					return (user.element == 'Choice' || user.element == 'Money');
-				});
+				}) : [];
 				arr.push({title: '发起人', element: "Start"});
 				return arr;
 			},

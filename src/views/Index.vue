@@ -39,7 +39,7 @@
 		<el-main>
 			<el-tabs v-model="editableTabsValue" type="card" closable @tab-remove="removeTab">
 				<el-tab-pane v-for="(item, index) in editableTabs" :key="item.name" :label="item.title" :name="item.name">
-					<component :ref="'applicat'+ index" :is="item.type" :key="item.type" :adhibitionFun="adhibitionFun" :itemData="item" :editableTabs.sync="editableTabs" :editableTabsValue.sync="editableTabsValue"></component>
+					<component :ref="'applicat'+ item.name" :is="item.type" :key="item.type" :adhibitionFun="adhibitionFun" :itemData="item" :editableTabs.sync="editableTabs" :editableTabsValue.sync="editableTabsValue"></component>
 				</el-tab-pane>
 			</el-tabs>
 		</el-main>
@@ -232,7 +232,7 @@
 				this.editableTabs = tabs.filter(tab => tab.name !== targetName);
 			},
 			release() {
-				let postGetSet = this.$refs['applicat'+(this.editableTabsValue-1)][0].getSet;
+				let postGetSet = this.$refs['applicat'+(this.editableTabsValue)][0].getSet;
 				let that = this;
 				for(let key in postGetSet.formConfig){
 					if(!postGetSet.formConfig[key].length){

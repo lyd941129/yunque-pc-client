@@ -17,8 +17,8 @@
 			<Flow :selectData="fieldSelect" :flowData="getSet.flow.flow_set" :sysCode="getSet.sys_code" :formConfigData="getSet.formConfig" 
 			:selectDataDispose="jurisdictionExample" v-show="adhibition === 'flow'"></Flow>
 			<Advanced :advData.sync="getSet.base" v-show="adhibition === 'advanced'"></Advanced>
-			<MsgTemplate key="search" :selectData="fieldSelect" :templateData="getSet.head" :searchData="getSet.search" searchJudge="yes" v-show="adhibition === 'search'"></MsgTemplate>
-			<MsgTemplate key="msg" :selectData="fieldSelect" :templateData="getSet.template" searchJudge="no" v-show="adhibition === 'msg'"></MsgTemplate>
+			<MsgTemplate key="search" :selectData="fieldSelect" :templateData.sync="getSet.head" :searchData="getSet.search" searchJudge="yes" v-if="adhibition === 'search'"></MsgTemplate>
+			<MsgTemplate key="msg" :selectData="fieldSelect" :templateData.sync="getSet.template" searchJudge="no" v-if="adhibition === 'msg'"></MsgTemplate>
 		</div>
 	</div>
 </template>
@@ -134,15 +134,15 @@
 						that.getSet.formConfig = {};
 					}
 					if(Array.isArray(that.getSet.template)){
-						// that.getSet.template = {
-						// 	"ca_id": "",//企业应用id
-						// 	"field_main": "",// 主标题id
-						// 	"field_main_title": "", // 主标题id组成的字符
-						// 	"field_main_show": "",// 主标题展示文字
-						// 	"field_vice": "",// 副标题id
-						// 	"field_vice_title": "",// 副标题id组成的字符
-						// 	"field_vice_show": ""// 副标题展示文字
-						// }
+						that.getSet.template = {
+							"ca_id": "",//企业应用id
+							"field_main": "",// 主标题id
+							"field_main_title": "", // 主标题id组成的字符
+							"field_main_show": "",// 主标题展示文字
+							"field_vice": "",// 副标题id
+							"field_vice_title": "",// 副标题id组成的字符
+							"field_vice_show": ""// 副标题展示文字
+						}
 					}
 					if(!that.getSet.head.field_main_show){
 						that.getSet.head = {
@@ -197,7 +197,7 @@
 						this.fieldSelect = obj[0].field;
 						this.getSet.template.field_main = this.getSet.template.field_vice = '';
 						that.jurisdictionExample = [];
-						this.fieldSelect.length && this.fieldSelect.map((item) => {
+						this.fieldSelect && this.fieldSelect.length && this.fieldSelect.map((item) => {
 							that.jurisdictionExample.push({
 								componentName: item.element,
 								fieldBehavior: "",

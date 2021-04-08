@@ -100,6 +100,7 @@
 				});
 				this.templateData.field_main_title = show;
 				// console.log(this.templateData)
+				this.$emit('update:templateData', this.templateData);
 			},
 			addTitleAssistant(val) {
 				var obj = {};
@@ -121,6 +122,7 @@
 					titleObj.length && that.templateData.field_vice.push(titleObj[0].id);
 				});
 				this.templateData.field_vice_title = show;
+				this.$emit('update:templateData', this.templateData);
 			},
 			addSearch(search) {
 				var obj = {}
@@ -150,6 +152,7 @@
 					}
 				});
 				type === '1' ? (this.templateData.field_main_title = show) : (this.templateData.field_vice_title = show);
+				this.$emit('update:templateData', this.templateData);
 			},
 		}
 	}
