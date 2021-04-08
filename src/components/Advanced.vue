@@ -226,6 +226,7 @@
 					val.approve_start ? (this.approve_start = true) : (this.approve_start = false);
 					let that = this;
 					this.treeSaveData = [];
+					that.show2 = [];
 					if(val.visible_depart && val.visible_depart.length){
 						val.visible_depart.map((item) => {
 							for(let key in item){
