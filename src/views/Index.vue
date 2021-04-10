@@ -39,7 +39,7 @@
 		<el-main>
 			<el-tabs v-model="editableTabsValue" type="card" closable @tab-remove="removeTab">
 				<el-tab-pane v-for="(item, index) in editableTabs" :key="item.name" :label="item.title" :name="item.name">
-					<component :ref="'applicat'+ index" :is="item.type" :key="item.type" :adhibitionFun="adhibitionFun" :itemData="item" :editableTabs.sync="editableTabs" :editableTabsValue.sync="editableTabsValue"></component>
+					<component :ref="'applicat'+ item.name" :is="item.type" :key="item.type" :adhibitionFun="adhibitionFun" :itemData="item" :editableTabs.sync="editableTabs" :editableTabsValue.sync="editableTabsValue"></component>
 				</el-tab-pane>
 			</el-tabs>
 		</el-main>
@@ -113,7 +113,7 @@
 				return;
 			}
 			this.loginData = localStorage.getItem("loginDatac") ? JSON.parse(localStorage.getItem("loginDatac")) : null;
-			console.log(that.loginData)
+			// console.log(that.loginData)
 			// 获取企业列表
 			that.$axios.get('/custom/user/company', {
 				headers: {
@@ -132,7 +132,7 @@
 			});
 		},
 		methods: {
-			handleEnterpriseList(val){
+			handleEnterpriseList(val){// 切换企业
 				let that = this;
 				that.loading = true;
 				that.$axios.post('/custom/company/switch', {
@@ -146,6 +146,7 @@
 					if(data.data.code === 1){
 						that.loginData.default_company = data.data.data.default_company;
 						localStorage.setItem("loginDatac", JSON.stringify(that.loginData));
+						that.clearTab();
 					}else{
 						that.overdueOperation(data.data.code, data.data.msg);
 					}
@@ -235,7 +236,7 @@
 				this.editableTabs = tabs.filter(tab => tab.name !== targetName);
 			},
 			release() {
-				let postGetSet = this.$refs['applicat'+(this.editableTabsValue-1)][0].getSet;
+				let postGetSet = this.$refs['applicat'+(this.editableTabsValue)][0].getSet;
 				let that = this;
 				for(let key in postGetSet.formConfig){
 					if(!postGetSet.formConfig[key].length){
@@ -268,7 +269,7 @@
 								message: res.data.msg,
 								type: 'success'
 							});
-							that.$refs.applicat0[0].getData();
+							that.$refs.applicat1[0].getData();
 							// console.log(res);
 						}else{
 							that.overdueOperation(res.data.code, res.data.msg);
@@ -279,7 +280,6 @@
 							message: err.msg,
 							type: 'error'
 						});
-						// console.log(err)
 					});
 				}).catch(() => {});
 			},
@@ -297,6 +297,12 @@
 				if(obj.childNode && Object.keys(obj.childNode).length){
 					this.flowConditionFun(obj.childNode);
 				}
+			},
+			clearTab(){// 重置tab页签
+				let that = this;
+				that.editableTabs = [that.editableTabs[0]];
+				that.editableTabsValue = '1';
+				that.$refs.applicat1[0].getData();
 			}
 		},
 	}

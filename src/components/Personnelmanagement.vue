@@ -3,16 +3,16 @@
 	<div class="personnelmanagement" v-loading="loading">
 		<el-form :inline="true" :model="formInline" class="demo-form-inline">
 			<el-form-item label="人员名称" v-if="itemData.app_id === 'rygl'">
-				<el-input v-model="formInline.username" placeholder="请输入人员名称" clearable></el-input>
+				<el-input @keyup.enter.native="onScreen" v-model="formInline.username" placeholder="请输入人员名称" clearable></el-input>
 			</el-form-item>
 			<el-form-item label="部门名称" v-if="itemData.app_id === 'rygl'">
-				<el-input v-model="formInline.depart_name" placeholder="请输入部门名称" clearable></el-input>
+				<el-input @keyup.enter.native="onScreen" v-model="formInline.depart_name" placeholder="请输入部门名称" clearable></el-input>
 			</el-form-item>
 			<el-form-item label="角色名称" v-if="itemData.app_id === 'jsgl'">
-				<el-input v-model="formInline.role_name" placeholder="请输入角色名称" clearable></el-input>
+				<el-input @keyup.enter.native="onScreen" v-model="formInline.role_name" placeholder="请输入角色名称" clearable></el-input>
 			</el-form-item>
 			<el-form-item label="项目角色名称" v-if="itemData.app_id === 'xmgl'">
-				<el-input v-model="formInline.role_name" placeholder="请输入角色名称" clearable></el-input>
+				<el-input @keyup.enter.native="onScreen" v-model="formInline.role_name" placeholder="请输入角色名称" clearable></el-input>
 			</el-form-item>
 			<!-- <el-form-item label="关键字">
 				<el-input v-model="formInline.keyword" placeholder="请输入关键字"></el-input>
@@ -119,7 +119,7 @@
 				<el-form-item label="角色名称" prop="role_name">
 					<el-input v-model="form.role_name" autocomplete="off" clearable></el-input>
 				</el-form-item>
-				<el-form-item label="职责描述" prop="role_describe">
+				<el-form-item label="职责描述" prop="role_describe" clearable>
 					<el-input v-model="form.role_describe" autocomplete="off"></el-input>
 				</el-form-item>
 				<el-form-item label="是否启用" prop="installed">

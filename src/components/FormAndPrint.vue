@@ -236,7 +236,7 @@
 	}
 	.formandprint{
 		.el-dialog__body{
-			height: calc(100% - 124px);
+			height: calc(100% - 144px);
 			text-align: center;
 			.phone {
 				display: inline-block;

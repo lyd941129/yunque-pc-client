@@ -31,19 +31,20 @@ axios.interceptors.request.use(config => {
 		router.push('/log');
 	}
 	if (window.location.hash != "#/log" && tokenExpressInTime() && localStorage.getItem('tokenTime')) {
-		ElementUI({
-			type: 'error',
-			center: true,
-			message: '登录超时请重新登录',
-			duration: 2000
-		})
-		setTimeout(() => {
-			router.push('/log');
-			setTimeout(function() {
-				localStorage.clear();
-			}, 100);
-		}, 1500)
-		return false
+		router.push('/log');
+		// ElementUI({
+		// 	type: 'error',
+		// 	center: true,
+		// 	message: '登录超时请重新登录',
+		// 	duration: 2000
+		// })
+		// setTimeout(() => {
+		// 	router.push('/log');
+		// 	setTimeout(function() {
+		// 		localStorage.clear();
+		// 	}, 100);
+		// }, 1500)
+		return false;
 	}
 	return config;
 }, error => {
