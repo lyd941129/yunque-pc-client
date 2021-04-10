@@ -195,7 +195,7 @@
 						let that = this;
 						let obj = this.getSet.form.filter((item) => item.id === val);
 						this.fieldSelect = obj[0].field;
-						this.getSet.template.field_main = this.getSet.template.field_vice = '';
+						// this.getSet.template.field_main = this.getSet.template.field_vice = '';
 						that.jurisdictionExample = [];
 						this.fieldSelect && this.fieldSelect.length && this.fieldSelect.map((item) => {
 							that.jurisdictionExample.push({

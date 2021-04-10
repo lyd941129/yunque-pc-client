@@ -25,7 +25,7 @@ if (reg.test(host)) {
 	//动态请求地址             协议               主机
 	axios.defaults.baseURL = protocol + "//" + host;
 }
-axios.interceptors.request.use(config => {
+axios.interceptors.request.use(config => { 
 	// 在发送请求之前做些什么
 	if (window.location.hash != "#/log" && localStorage.getItem('tokenTime') == null) {
 		router.push('/log');
