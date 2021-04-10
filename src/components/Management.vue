@@ -109,13 +109,13 @@
 						app_name: '续费管理',
 						icon: 'icon-expenditure',
 						app_id: "",
-						type: 'OrderRenewal'
+						type: 'Expenditure'
 					},
 					{
 						app_name: '订单管理',
 						icon: 'icon-indent',
 						app_id: "",
-						type: 'OrderRenewal'
+						type: 'OrderLists'
 					}
 				]
 			}

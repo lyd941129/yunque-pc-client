@@ -57,7 +57,8 @@
 	import Personnelmanagement from '../components/Personnelmanagement.vue';
 	import Divisionalmanagement from '../components/Divisionalmanagement.vue';
 	import BasicDatas from '../components/BasicDatas/BasicDatas.vue';
-	import OrderRenewal from '../components/OrderRenewal/OrderRenewal.vue';
+	import OrderLists from '../components/OrderRenewal/OrderLists.vue';
+	import Expenditure from '../components/OrderRenewal/Expenditure.vue';
 	
 	import axios from 'axios';
 	export default {
@@ -72,7 +73,8 @@
 			Personnelmanagement,
 			Divisionalmanagement,
 			BasicDatas,
-			OrderRenewal
+			OrderLists,
+			Expenditure
 		},
 		data() {
 			return {

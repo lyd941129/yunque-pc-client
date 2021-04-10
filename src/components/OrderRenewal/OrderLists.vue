@@ -1,37 +1,12 @@
 <template>
     <div class="personnelmanagement">
         
-
+		<el-row>
+			<el-button type="primary" class="btn-blue" @click="sendFn">批量开票</el-button>
+		</el-row>
 		<div class="table-box">
             <grid-manager :option="gridOption" :callback="callback" ref="grid"></grid-manager>
-       <!--      <table class="hf-table">
-                <thead>
-                    <th>订单详情</th>
-                    <th>办理人</th>
-                    <th>金额</th>
-                    <th>状态</th>
-                    <th>操作</th>
-                </thead>
-                <tbody>
-                    <template v-for="(item,index) in tableData">
-                        <tr :key="index">
-                            <td colspan="5">
-                                <div>{{item.create_time}}</div>
-                                <div>订单号 : {{item.order_no}}</div>
-                            </td>
-                        </tr>
-                        <tr :key="index">
-                            <td>{{item.subject}}</td>
-                            <td>{{item.user_name}}</td>
-                            <td>{{item.pay_price}}</td>
-                            <td>{{item.pay_status}}</td>
-                            <td>去办理</td>
-                        </tr>
-                    </template>
-                </tbody>
-            </table> -->
 		</div>
-
         <el-pagination @current-change="searchFn" :current-page="searchLists.page" @size-change="sizeChange"
 		:page-size="searchLists.page_size" :page-sizes="pageSizes" layout="sizes, total, prev, pager, next, jumper" :total="total">
 		</el-pagination>
@@ -50,12 +25,7 @@ export default {
         GridManager
     },
     computed: {
-/*         tableData(){
-            debugger
-            return fetch(this.searchFn()).then((res)=>{
-                console.log(res)
-            })
-        } */
+
     },
     data(){
         return {
@@ -70,51 +40,6 @@ export default {
             },
             // 翻页的数组
             pageSizes: [15,30,50,100],
-            // 表格数据
-            tableData: [
-                {
-                    "id": "228821470728445953",
-                    "user_name": "张三",
-                    "order_no": "20210312101449728445952",
-                    "subject": "云雀-软件续费+增值服务",
-                    "pay_price": "0.03",
-                    "pay_type": "alipay",
-                    "pay_status": 2,
-                    "transaction_id": "2021031222001443321401788040",
-                    "invoice_log_id": "",
-                    "remark": "",
-                    "create_time": "2021-03-12 10:14:49",
-                    "items": [
-                        {
-                            "id": "228821470745223168",
-                            "order_id": "228821470728445953",
-                            "serve_name": "软件续费",
-                            "packages_type": 1,
-                            "packages_name": "三个月",
-                            "price": "0.01",
-                            "duration": 3
-                        },
-                        {
-                            "id": "228821470753611776",
-                            "order_id": "228821470728445953",
-                            "serve_name": "增值服务",
-                            "packages_type": 2,
-                            "packages_name": "短信套餐",
-                            "price": "0.01",
-                            "duration": 1000
-                        },
-                        {
-                            "id": "228821470762000384",
-                            "order_id": "228821470728445953",
-                            "serve_name": "增值服务",
-                            "packages_type": 3,
-                            "packages_name": "发票识别",
-                            "price": "0.01",
-                            "duration": 1000
-                        }
-                    ]
-                }
-            ],
             
             // 表格渲染回调函数
             // query为gmOptions中配置的query
@@ -163,17 +88,17 @@ export default {
                         text: '订单详情',
                         align: 'center',
                         template(e,row){
-                            return `<div>${e}</div>${row.items.map((v,i)=>{
+                            return `<div class="order-subject"><div>${e}</div>${row.items.map((v,i)=>{
                                 return `
                                     <div>
                                         ${v.packages_type === 1 ? v.serve_name : v.packages_name}
-                                        --
+                                        ,
                                         ${v.duration_text}
-                                        --
+                                        ,
                                         ${v.price}元
                                     </div>
                                 `
-                            }).join("")}`
+                            }).join("")}</div>`
                         }
                     },{
                         key: 'user_name',
@@ -183,7 +108,12 @@ export default {
                         key: 'pay_price',
                         text: '金额（元）',
                         align: 'center',
-
+                        template(e,row){
+                            return `
+                                <div class="pay-price">${e}</div>
+                                <div class="gray" v-if="${row.pay_status === 2}">在线支付</div>
+                            `
+                        }
                         // template=> string dom
                         // template: `<span style="color: red">跟据相关法规，该单元格被过滤</span>`
                     },{
@@ -204,29 +134,14 @@ export default {
                         template(e,row) {
                             return `
                             <div class="operate-btn blue">
-                                <span v-if="${Boolean(row.invoice_log_id)}">查看发票</span>
-                                <span v-else-if="${row.pay_status === 2}">申请发票</span>
-                                <span v-else-if="${row.pay_status === 1}">去付款</span>
-                                <span v-if="${row.pay_status === 1 || row.pay_status === 3}" class="red">删除订单</span>
-                                
+                                <span @click="operateFn(1,row)" v-if="Boolean(row.invoice_log_id)">查看发票</span>
+                                <span @click="operateFn(2,row)" v-else-if="row.pay_status === 2">申请发票</span>
+                                <span @click="operateFn(3,row)" v-else-if="row.pay_status === 1">去付款</span>
+                                <span @click="operateFn(4,row)" v-if="row.pay_status === 1 || row.pay_status === 3" class="red">删除订单</span>
                             </div>
-                               
                             `;
                         }
                     },
-             /*        {
-                        key: 'action',
-                        text: '操作',
-                        width: '100px',
-                        align: 'center',
-
-                        // template=> function: return vue template
-                        // vue模版中将自动添加row字段，该字段为当前行所使用的数据
-                        // vue模版将不允许再使用template函数中传入的参数
-                        template:() => {
-                            return '<el-button size="mini" type="danger" @click="delRelation(row)">解除绑定</el-button>';
-                        }
-                    } */
                 ],
                 skinClassName: "grid-table",
                 // 自动序号
@@ -250,12 +165,27 @@ export default {
 
                 // checkbox选择事件
                 checkedAfter: rowList => {
-                    this.selectedCheck(rowList);
+                    // this.selectedCheck(rowList);
                 },
             }
         }
     },
     methods: {
+        // 操作里面的按钮
+        operateFn(type,data){
+            console.log(type)
+            console.log(data)
+        },
+        // 批量开票
+        sendFn(item){
+            // 申请发票
+          let checkData = GridManager.getCheckedData('girdTable');
+          if(!checkData.length){
+              this.$message.error('请至少勾选一项');
+              return
+          }
+          console.log(checkData)
+        },
         // 解除绑定
         delRelation: function(row) {
             // ... 解除绑定操作
@@ -280,7 +210,6 @@ export default {
                 params: this.searchLists
             }).then((res)=>{
                 if(res.data.code === 1){
-                    // that.tableData = res.data.data.list
                     GridManager.setAjaxData('girdTable', {data: res.data.data.list});
                     that.total = res.data.data.total
                 }else{
@@ -314,6 +243,7 @@ export default {
 		height: 100%;
 		.table-box {
 			height: calc(100% - 104px);
+            margin-top: 20px;
 		}
 		.el-pagination{
 			text-align: center;
@@ -326,6 +256,7 @@ export default {
 
 
     /deep/ .grid-table{
+        border-bottom: #ebeef5 1px solid;
         table[grid-manager]{
             margin-top: -20px!important;
             .table-header{
@@ -360,6 +291,16 @@ export default {
             }
             .hf-tr{
                 height: 103px;
+                font-size: 16px;
+            }
+            .order-subject{
+                line-height: 28px;
+                white-space: initial;
+                text-align: left;
+            }
+            .pay-price{
+                color: #FAAD14;
+                font-weight: bold;
             }
             .red{
                 color: #F5222D;
