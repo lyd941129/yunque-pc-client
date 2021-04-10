@@ -37,13 +37,11 @@
 		</div>
 		<h5>订单续费</h5>
 		<div class="surface">
-			<div class="surface-box">
-				<i class="icon icon-expenditure"></i>
-				<span>续费管理</span>
-			</div>
-			<div class="surface-box">
-				<i class="icon icon-indent"></i>
-				<span>订单管理</span>
+
+
+			<div class="surface-box" v-for="(item,index) in orderData" :key="index" @click="adhibitionFun(item)">
+				<i :class="['icon',item.icon]"></i>
+				<span>{{item.app_name}}</span>
 			</div>
 		</div>
 	</div>
@@ -102,7 +100,22 @@
 						app_name: '基础数据管理',
 						icon: 'icon-basicdata',
 						app_id: "",
-						type: 'Basicdata'
+						type: 'BasicDatas'
+					}
+				],
+				// 订单续费
+				orderData: [
+					{
+						app_name: '续费管理',
+						icon: 'icon-expenditure',
+						app_id: "",
+						type: 'OrderRenewal'
+					},
+					{
+						app_name: '订单管理',
+						icon: 'icon-indent',
+						app_id: "",
+						type: 'OrderRenewal'
 					}
 				]
 			}

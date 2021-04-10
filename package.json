@@ -11,6 +11,8 @@
     "axios": "^0.20.0",
     "core-js": "^3.6.5",
     "element-ui": "^2.13.2",
+    "gridmanager": "^2.15.0",
+    "gridmanager-vue": "^1.9.0",
     "qrcodejs2": "0.0.2",
     "vue": "^2.6.11",
     "vue-router": "^3.4.7",
@@ -47,5 +49,13 @@
     "> 1%",
     "last 2 versions",
     "not dead"
-  ]
+  ],
+  "description": "```\r npm install\r ```",
+  "main": "babel.config.js",
+  "repository": {
+    "type": "git",
+    "url": "git@github-B:lyd941129/yunque-pc-client.git"
+  },
+  "author": "",
+  "license": "ISC"
 }
