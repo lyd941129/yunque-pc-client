@@ -56,7 +56,9 @@
 	import Applicationsettings from '../components/Applicationsettings.vue';
 	import Personnelmanagement from '../components/Personnelmanagement.vue';
 	import Divisionalmanagement from '../components/Divisionalmanagement.vue';
-	import Basicdata from '../components/Basicdata/Basicdata.vue';
+	import BasicDatas from '../components/BasicDatas/BasicDatas.vue';
+	import OrderRenewal from '../components/OrderRenewal/OrderRenewal.vue';
+	
 	import axios from 'axios';
 	export default {
 		components: {
@@ -69,7 +71,8 @@
 			Applicationsettings,
 			Personnelmanagement,
 			Divisionalmanagement,
-			Basicdata
+			BasicDatas,
+			OrderRenewal
 		},
 		data() {
 			return {

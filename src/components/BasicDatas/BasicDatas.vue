@@ -15,10 +15,10 @@
             <el-form :inline="true" :model="searchLists" class="demo-form-inline">
                 <el-form-item label="关键字">
                     <!-- 回车时触发 -->
-                    <el-input type="text" @keyup.enter.native="onScreen" v-model="searchLists.dict_label" prefix-icon="el-icon-search" placeholder="关键字搜索" clearable></el-input>
+                    <el-input type="text" @keyup.enter.native="searchFn(1)" v-model="searchLists.dict_label" prefix-icon="el-icon-search" placeholder="关键字搜索" clearable></el-input>
                 </el-form-item>
                 <el-form-item>
-                    <el-button @click="onScreen">确认筛选</el-button>
+                    <el-button @click="searchFn(1)">确认筛选</el-button>
                 </el-form-item>
             </el-form>
             <el-row>
