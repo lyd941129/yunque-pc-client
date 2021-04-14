@@ -5,7 +5,7 @@
 			<el-col :span="12">
 				<el-menu :default-active="adhibition" class="el-menu-vertical-demo" @select="handlAdhibition">
 					<el-menu-item v-for="(item, index) in adhibitionArr" :index="item.key" :key="index">
-						<span slot="title">{{item.lable}}</span>
+						<span slot="title" class="span-css" :class="item.status">{{item.lable}}</span>
 					</el-menu-item>
 				</el-menu>
 			</el-col>
@@ -47,27 +47,33 @@
 				adhibition: 'basics',
 				adhibitionArr: [{
 						lable: '基础设置',
-						key: 'basics'
-					},
-					{
-						lable: '表单及打印模板',
-						key: 'from'
+						key: 'basics',
+						status: 'required-css',
 					},
 					{
 						lable: '审批流程',
-						key: 'flow'
+						key: 'flow',
+						status: 'required-css',
 					},
 					{
 						lable: '高级设置',
-						key: 'advanced'
+						key: 'advanced',
+						status: 'required-css',
+					},
+					{
+						lable: '表单及打印模板',
+						key: 'from',
+						status: '',
 					},
 					{
 						lable: '查询及列表设置',
-						key: 'search'
+						key: 'search',
+						status: '',
 					},
 					{
 						lable: '消息推送模板',
-						key: 'msg'
+						key: 'msg',
+						status: '',
 					},
 				],
 				loading: true,
@@ -214,10 +220,20 @@
 
 <style lang="less" scoped>
 	.table-box {
-			height: calc(100% - 104px);
-			&.table-box-btn{
-				height: calc(100% - 164px);
-				margin-top: 20px;
-			}
+		height: calc(100% - 104px);
+		&.table-box-btn{
+			height: calc(100% - 164px);
+			margin-top: 20px;
 		}
+	}
+	.span-css{
+		position: relative;
+		&.required-css::after{
+			content: "*";
+			position: absolute;
+			color: red;
+			right: -10px;
+		}
+	}
+	
 </style>

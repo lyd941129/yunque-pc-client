@@ -146,8 +146,8 @@
 									that.$router.push('/');
 								}, 1000)
 								localStorage.setItem("loginDatac", JSON.stringify(data.data.data));
-								let timedate = new Date().getTime() + ((data.data.data.expires/60/60) * 3600 * 1000);
-								localStorage.setItem('tokenTime', timedate)
+								// let timedate = new Date().getTime() + ((data.data.data.expires/60/60) * 3600 * 1000);
+								// localStorage.setItem('tokenTime', timedate)
 								// that.$store.commit('edit', data.data);
 							}else{
 								that.$message({
@@ -192,8 +192,8 @@
 								that.$router.push('/');
 							}, 1000);
 							localStorage.setItem("loginDatac", JSON.stringify(data.data.data));
-							let timedate = new Date().getTime() + ((data.data.data.expires/60/60) * 3600 * 1000);
-							localStorage.setItem('tokenTime', timedate)
+							// let timedate = new Date().getTime() + ((data.data.data.expires/60/60) * 3600 * 1000);
+							// localStorage.setItem('tokenTime', timedate)
 						}
 					}).catch(msg => {
 						that.$message({
