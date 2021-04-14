@@ -15,9 +15,9 @@ Vue.mixin({
 			this.allUrl  = protocol + "//" + host ;
 			this.imgHttp  = protocol + "//" + 'yqadmin.taozizi.cn' ;
 		}
-		if(localStorage.getItem('tokenTime') == null && window.location.hash != "#/log"){
-			this.$router.push('/log');
-		}
+		// if(localStorage.getItem('tokenTime') == null && window.location.hash != "#/log"){
+		// 	this.$router.push('/log');
+		// }
 		this.loginData = localStorage.getItem("loginDatac") ? JSON.parse(localStorage.getItem("loginDatac")) : null;
 	},
 	data(){

@@ -109,9 +109,9 @@
 		created() {
 			let that = this;
 			// console.log(this.$store.state.loginData)
-			if(localStorage.getItem('tokenTime') == null){
-				return;
-			}
+			// if(localStorage.getItem('tokenTime') == null){
+			// 	return;
+			// }
 			this.loginData = localStorage.getItem("loginDatac") ? JSON.parse(localStorage.getItem("loginDatac")) : null;
 			// console.log(that.loginData)
 			// 获取企业列表
