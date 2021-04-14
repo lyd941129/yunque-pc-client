@@ -338,6 +338,7 @@ export default {
 }
 </script>
 <style lang="less" scoped>
+.enterprise-box{
     .table-box-btn{
         height: calc(100% - 164px);
         margin-top: 20px;
@@ -349,4 +350,6 @@ export default {
             display: none;
         }
     }
+}
+
 </style>

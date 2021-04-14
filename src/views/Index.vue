@@ -37,7 +37,7 @@
 			</el-row>
 		</el-header>
 		<el-main>
-			<el-tabs v-model="editableTabsValue" type="card" closable @tab-remove="removeTab">
+			<el-tabs id="main-tabs" v-model="editableTabsValue" type="card" closable @tab-remove="removeTab">
 				<el-tab-pane v-for="(item, index) in editableTabs" :key="item.name" :label="item.title" :name="item.name">
 					<component :ref="'applicat'+ item.name" :is="item.type" :key="item.type" :adhibitionFun="adhibitionFun" :itemData="item" :editableTabs.sync="editableTabs" :editableTabsValue.sync="editableTabsValue"></component>
 				</el-tab-pane>
@@ -312,6 +312,11 @@
 
 <style lang="less">
 	@import "../../static/css/general.less";
+	#main-tabs{
+		margin: 0 auto;
+    	max-width: 1280px;
+		min-width: 980px;
+	}
 	.el-container.is-vertical {
 		height: 100%;
 	}

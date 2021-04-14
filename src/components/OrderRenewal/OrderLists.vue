@@ -1,5 +1,5 @@
 <template>
-    <div class="personnelmanagement">
+    <div class="order-box">
         
 		<el-row>
 			<el-button type="primary" class="btn-blue" @click="sendFn">批量开票</el-button>
@@ -171,10 +171,52 @@ export default {
         }
     },
     methods: {
-        // 操作里面的按钮
+        // 操作里面的按钮type: 1查看、2申请、3去支付(订单详情)、4删除
         operateFn(type,data){
             console.log(type)
             console.log(data)
+            let url = "";
+            switch (type) {
+                case 1:
+                    url = "/custom/invoice/detail"
+                    break;
+                case 2:
+                    url = "/custom/invoice/apply"
+                    break;
+                case 3:
+                    url = "/custom/order/detail"
+                    break;
+                case 4:
+                    url = "/custom/order/cancel"
+                    break;
+                default:
+                    break;
+            }
+            let option = {
+                id : order_no
+            }
+            return
+            this.$axios.post(url,option, {
+                headers: {
+                    'content-type': 'application/json',
+                    "token": that.loginData.token  //token换成从缓存获取
+                }
+            }).then(res => {
+                if(res.data.code === 1){
+                    this.centerDialogVisible = false
+                    this.searchFn(this.searchLists.page)
+                }else{
+                    this.overdueOperation(res.data.code, res.data.msg);
+                }
+                this.loading = false;
+            }).catch(err => {
+                this.loading = false;
+                this.$message({
+                    message: err,
+                    type: 'error'
+                });
+            })
+            
         },
         // 批量开票
         sendFn(item){
@@ -239,7 +281,7 @@ export default {
 </script>
 
 <style scoped lang="less">
-	.personnelmanagement{
+	.order-box{
 		height: 100%;
 		.table-box {
 			height: calc(100% - 104px);
