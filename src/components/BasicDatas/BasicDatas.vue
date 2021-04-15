@@ -219,11 +219,11 @@ export default {
                 })
                 this.createAn({ids: delIds})
             }).catch(err => {
-                that.$message({
-                    showClose: true,
-                    message: err.msg,
-                    type: 'error'
-                });
+                // that.$message({
+                //     showClose: true,
+                //     message: err.msg,
+                //     type: 'error'
+                // });
                 // console.log(err)
             });
 
