@@ -120,9 +120,8 @@ export default {
                         align: 'center',
                         template(e,row){
                             return `
-                                ${e === 1 ? '<div class="green">未付款</div>' : 
-                                e === 2 ? row.invoice_log_id ? '<div class="red">已开票</div>' : '<div class="">未开票</div>' :
-                                '<div class="gray">已退款</div>'}
+                            ${e === 1 ? '<div class="yellow">未付款</div>' : e === 2 ? '<div class="green">已付款</div>' : '<div class="gray">已退款</div>'}
+                            ${row.invoice_log_id ? '<div class="red">已开票</div>' : e === 2 ? '<div class="">未开票</div>' : ''}
                             `
                         }
                     },{
@@ -131,12 +130,20 @@ export default {
                         align: 'center',
                         template(e,row) {
                             return `
-                            <div class="operate-btn blue">
-                                <span @click="operateFn(1,row)" v-if="Boolean(row.invoice_log_id)">查看发票</span>
-                                <span @click="operateFn(2,row)" v-else-if="row.pay_status === 2">申请发票</span>
-                                <span @click="operateFn(3,row)" v-else-if="row.pay_status === 1">去付款</span>
-                                <span @click="operateFn(4,row)" v-if="row.pay_status === 1 || row.pay_status === 3" class="red">删除订单</span>
-                            </div>
+                            <ul class="operate-btn blue">
+                                <li v-if="Boolean(row.invoice_log_id)">
+                                    <span @click="operateFn(1,row)">查看发票</span>
+                                </li>
+                                <li v-else-if="row.pay_status === 2">
+                                    <span @click="operateFn(2,row)">申请发票</span>
+                                </li>
+                                <li v-else-if="row.pay_status === 1">
+                                    <span @click="operateFn(3,row)">去付款</span>
+                                </li>
+                                <li v-if="row.pay_status === 1 || row.pay_status === 3" class="gray">
+                                    <span class="font-min" @click="operateFn(4,row)">删除订单</span>
+                                </li>
+                            </ul>
                             `;
                         }
                     },
@@ -322,9 +329,17 @@ export default {
             [full-column-interval] td {
                 border-right: none;
             }
-            .operate-btn span{
-                margin: 0 10px;
-                cursor: pointer;
+            .operate-btn li{
+                text-align: center;
+                span{
+                    cursor: pointer;
+                    font-size: 16px;
+                    line-height: 26px;
+                    &.font-min{
+                        font-size: 14px;
+                        line-height: 24px;
+                    }
+                }
             }
             thead{
                 background-color: #F5F5F5;
@@ -349,10 +364,13 @@ export default {
                 color: #1890FF
             }
             .gray{
-                color: #DDDDDD;
+                color: #A6A6A6;
             }
             .green{
                 color: #00bb78;
+            }
+            .yellow{
+                color: #FF9813;
             }
         }
 
