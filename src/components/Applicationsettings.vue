@@ -5,7 +5,7 @@
 			<el-col :span="12">
 				<el-menu :default-active="adhibition" class="el-menu-vertical-demo" @select="handlAdhibition">
 					<el-menu-item v-for="(item, index) in adhibitionArr" :index="item.key" :key="index">
-						<span slot="title" class="span-css" :class="item.status">{{item.lable}}</span>
+						<span slot="title" class="span-css" :class="item.status">{{item.lable}}<i v-if="item.status === 'required-css'" class="required-css">*</i></span>
 					</el-menu-item>
 				</el-menu>
 			</el-col>
@@ -228,11 +228,11 @@
 	}
 	.span-css{
 		position: relative;
-		&.required-css::after{
-			content: "*";
+		.required-css{
 			position: absolute;
 			color: red;
 			right: -10px;
+			margin-top: 4px;
 		}
 	}
 	

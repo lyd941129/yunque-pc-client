@@ -201,12 +201,7 @@ export default {
                 id : order_no
             }
             return
-            this.$axios.post(url,option, {
-                headers: {
-                    'content-type': 'application/json',
-                    "token": that.loginData.token  //token换成从缓存获取
-                }
-            }).then(res => {
+            this.$axios.post(url,option).then(res => {
                 if(res.data.code === 1){
                     this.centerDialogVisible = false
                     this.searchFn(this.searchLists.page)
@@ -249,13 +244,7 @@ export default {
                 url = "/custom/order/index";
                 console.log(size)
             this.searchLists.page = size || 1
-            this.$axios.get(url,{
-                headers: {
-					'content-type': 'application/json',
-					"token": that.loginData.token  //token换成从缓存获取
-				},
-                params: this.searchLists
-            }).then((res)=>{
+            this.$axios.get(url).then((res)=>{
                 if(res.data.code === 1){
                     GridManager.setAjaxData('girdTable', {data: res.data.data.list});
                     that.total = res.data.data.total

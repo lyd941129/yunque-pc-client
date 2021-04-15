@@ -117,12 +117,7 @@
 			this.loginData = localStorage.getItem("loginDatac") ? JSON.parse(localStorage.getItem("loginDatac")) : null;
 			// console.log(that.loginData)
 			// 获取企业列表
-			that.$axios.get('/custom/user/company', {
-				headers: {
-					'content-type': 'application/json',
-					"token": that.loginData.token  //token换成从缓存获取
-				}
-			}).then(data => {
+			that.$axios.get('/custom/user/company').then(data => {
 				// console.log(data);
 				if(data.data.code === 1){
 					that.$set(that, 'enterpriseList', data.data.data);
@@ -139,11 +134,6 @@
 				that.loading = true;
 				that.$axios.post('/custom/company/switch', {
 					cid: val
-				}, {
-					headers: {
-						'content-type': 'application/json',
-						"token": that.loginData.token  //token换成从缓存获取
-					}
 				}).then(data => {
 					if(data.data.code === 1){
 						that.loginData.default_company = data.data.data.default_company;
@@ -163,13 +153,8 @@
 				switch(command){
 					case "logout":// 退出登录
 						that.loading = true;
-						axios.defaults.baseURL = 'http://yqflow.taozizi.cn';
-						that.$axios.post('/custom/token/logout', {}, {
-							headers: {
-								'content-type': 'application/json',
-								"token": that.loginData.token  //token换成从缓存获取
-							}
-						}).then(data => {
+						// axios.defaults.baseURL = 'http://yqflow.taozizi.cn';
+						that.$axios.post('/custom/token/logout', {}).then(data => {
 							if(data.data.code === 1){
 								that.$message({
 									message: data.data.msg,
