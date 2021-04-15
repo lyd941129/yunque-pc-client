@@ -114,8 +114,6 @@ export default {
                                 <div class="gray" v-if="${row.pay_status === 2}">在线支付</div>
                             `
                         }
-                        // template=> string dom
-                        // template: `<span style="color: red">跟据相关法规，该单元格被过滤</span>`
                     },{
                         key: 'pay_status',
                         text: '状态',

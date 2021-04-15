@@ -66,7 +66,7 @@
                 <div class="money-box">
                     <div class="mini-title">总价</div>
                     <div class="item-total money">
-                        {{moneyFormat(item.itemTotal || 0)}}
+                        {{moneyFormat(item.checkServe && item.itemTotal || 0)}}
                         <small>元</small>
                     </div>
                 </div>
@@ -74,7 +74,7 @@
         </ul>
         <div class="expenditure-bottom dis-flex">
             <div class="bottom-left average">
-                <div class="num">已选商品 : <span class="money">2</span></div>
+                <div class="num">已选商品 : <span class="money">{{checkServeLength}}</span></div>
                 <div class="totals">合计 : <span class="money">{{totalsMoney}}<small>元</small></span></div>
             </div>
             <div @click="sendFn" class="sure-btn">结算</div>
@@ -98,12 +98,18 @@ export default {
 
 
 
+        // 已选服务数量
+        checkServeLength(){
+            return this.serveData.filter((v)=>{
+                return v.checkServe
+            }).length
+        },
         // 选择的服务的总价
         totalsMoney(){
             let money = 0
             this.serveData.map((v)=>{
                 if(v.checkServe){
-                    money += v.itemTotal - 0
+                    money += (v.itemTotal || 0) - 0
                 }
             })
             
@@ -275,6 +281,10 @@ export default {
                     }
                 }
             })
+            if(!arr.length){
+                this.$message.error('请至少选择一个服务');
+                return;
+            }
             let sendData = {
                 params: arr
             }
