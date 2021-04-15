@@ -159,12 +159,7 @@ export default {
                 // 编辑
                 url = "/custom/dict/edit_value";
             }
-            this.$axios.post(url,option, {
-                headers: {
-                    'content-type': 'application/json',
-                    "token": that.loginData.token  //token换成从缓存获取
-                }
-            }).then(res => {
+            this.$axios.post(url,option).then(res => {
                 if(res.data.code === 1){
                     this.centerDialogVisible = false
                     this.searchFn(this.searchLists.page)
@@ -245,10 +240,6 @@ export default {
                 console.log(size)
             this.searchLists.page = size || 1
             this.$axios.get(url,{
-                headers: {
-					'content-type': 'application/json',
-					"token": that.loginData.token  //token换成从缓存获取
-				},
                 params: this.searchLists
             }).then((res)=>{
                 if(res.data.code === 1){
@@ -297,12 +288,7 @@ export default {
         let that = this;
         that.loading = true;
         let url = '/custom/dict/index';
-        this.$axios.get(url, {
-				headers: {
-					'content-type': 'application/json',
-					"token": that.loginData.token  //token换成从缓存获取
-				}
-			}).then(res => {
+        this.$axios.get(url).then(res => {
             if(res.data.code === 1){
                console.log(res)
                that.adhibitionArr = res.data.data

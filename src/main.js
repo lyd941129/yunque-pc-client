@@ -25,6 +25,15 @@ if (reg.test(host)) {
 	//动态请求地址             协议               主机
 	axios.defaults.baseURL = protocol + "//" + host;
 }
+axios.interceptors.request.use(config => {
+	if(window.location.hash != "#/log"){
+		let loginData = localStorage.getItem("loginDatac") ? JSON.parse(localStorage.getItem("loginDatac")) : {};
+		config.headers['token'] = loginData.token;  //config里就是可以统一配置request请求的参数，headers就可以在这设置
+	}
+	return config
+},
+	error => Promise.reject(error)
+);
 // axios.interceptors.request.use(config => { 
 // 	// 在发送请求之前做些什么
 // 	if (window.location.hash != "#/log" && localStorage.getItem('tokenTime') == null) {
