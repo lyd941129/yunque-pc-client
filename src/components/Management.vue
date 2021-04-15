@@ -87,19 +87,19 @@
 					{
 						app_name: '成员使用统计',
 						icon: 'icon-statistics',
-						app_id: "",
+						app_id: "statistics",
 						type: 'statistics'
 					},
 					{
 						app_name: '管理员操作记录',
 						icon: 'icon-operation',
-						app_id: "",
+						app_id: "operation",
 						type: 'operation'
 					},
 					{
 						app_name: '基础数据管理',
 						icon: 'icon-basicdata',
-						app_id: "",
+						app_id: "BasicDatas",
 						type: 'BasicDatas'
 					}
 				],
@@ -108,13 +108,13 @@
 					{
 						app_name: '续费管理',
 						icon: 'icon-expenditure',
-						app_id: "",
+						app_id: "Expenditure",
 						type: 'Expenditure'
 					},
 					{
 						app_name: '订单管理',
 						icon: 'icon-indent',
-						app_id: "",
+						app_id: "OrderLists",
 						type: 'OrderLists'
 					}
 				]
