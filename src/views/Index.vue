@@ -59,6 +59,7 @@
 	import BasicDatas from '../components/BasicDatas/BasicDatas.vue';
 	import OrderLists from '../components/OrderRenewal/OrderLists.vue';
 	import Expenditure from '../components/OrderRenewal/Expenditure.vue';
+	import OrderPay from '../components/OrderRenewal/OrderPay.vue';
 	
 	import axios from 'axios';
 	export default {
@@ -74,7 +75,8 @@
 			Divisionalmanagement,
 			BasicDatas,
 			OrderLists,
-			Expenditure
+			Expenditure,
+			OrderPay
 		},
 		data() {
 			return {
@@ -127,6 +129,18 @@
 			}).catch(msg => {
 				that.$message.error(msg);
 			});
+			
+			// 监听，新增tab页签
+			that.$hfBus.$on("addnewtabs",(data)=>{
+				console.log(data)
+				that.adhibitionFun(data)
+			})
+
+
+		},
+		// 销毁时
+		destroyed(){
+			this.$off(['addnewtabs'])
 		},
 		methods: {
 			handleEnterpriseList(val){// 切换企业

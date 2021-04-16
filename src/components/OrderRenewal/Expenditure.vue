@@ -289,6 +289,12 @@ export default {
                 params: arr
             }
             console.log(sendData)
+            console.log(this.$parent.$parent.$parent.adhibitionFun)
+            this.$hfBus.$emit("addnewtabs",{
+                app_name: "订单付款",
+                app_id: "OrderPay",
+                type: "OrderPay"
+            })
         },
         // 套餐选择判断提示
         mealTipFn(data){
