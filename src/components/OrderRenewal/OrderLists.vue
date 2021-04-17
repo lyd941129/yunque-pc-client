@@ -1,5 +1,5 @@
 <template>
-    <div class="order-box">
+    <div class="order-box" v-loading="loading">
         
 		<el-row>
 			<el-button type="primary" class="btn-blue" @click="sendFn">批量开票</el-button>
@@ -19,7 +19,7 @@ import GridManager from 'gridmanager-vue';
 import 'gridmanager-vue/css/gm-vue.css';
 export default {
     props: {
-
+        itemData:{}
     },
     components: {
         GridManager
@@ -67,7 +67,7 @@ export default {
                                 + '<span>'
                                 + row.create_time
                                 + '</span>'
-                                + '<span>'
+                                + '<span>订单号 : '
                                 + row.order_no
                                 + '</span>'
                                 +'</div>';
@@ -178,9 +178,9 @@ export default {
     methods: {
         // 操作里面的按钮type: 1查看、2申请、3去支付(订单详情)、4删除
         operateFn(type,data){
-            console.log(type)
-            console.log(data)
-            let url = "";
+
+            let url = "",
+                option = {};
             switch (type) {
                 case 1:
                     url = "/custom/invoice/detail"
@@ -189,34 +189,70 @@ export default {
                     url = "/custom/invoice/apply"
                     break;
                 case 3:
-                    url = "/custom/order/detail"
+                    // url = "/custom/order/detail"
+                    this.$hfBus.$emit("addnewtabs",{
+                        tab: {
+                            app_name: "订单付款",
+                            app_id: "OrderPay",
+                            type: "OrderPay"
+                        },
+                        data: data
+                    })
                     break;
                 case 4:
-                    url = "/custom/order/cancel"
+                    // 删除
+                    url = "/custom/order/del"
+                    option.order_id = data.id
+                    this.$confirm('确认删除订单吗？','提示',{
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    }).then(() => {
+                        this.operatePostFn(type,{
+                            url: url,
+                            option: option
+                        })
+
+                    }).catch(err => {
+                        
+                    });
                     break;
                 default:
                     break;
             }
-            let option = {
-                id : order_no
-            }
-            return
-            this.$axios.post(url,option).then(res => {
+            
+        },
+        operatePostFn(type,Data){
+            this.$axios.post(Data.url,Data.option).then(res => {
                 if(res.data.code === 1){
-                    this.centerDialogVisible = false
-                    this.searchFn(this.searchLists.page)
+                    // 刷新
+                    switch (type) {
+                        case 1:
+                            // 查看
+                            break;
+                        case 2:
+                            // 申请
+                            break;
+                        case 3:
+                            // 去支付
+                            break;
+                        case 4:
+                            // 删除
+                            this.searchFn()
+                            break;
+                        default:
+                            break;
+                    }
+                    
                 }else{
                     this.overdueOperation(res.data.code, res.data.msg);
                 }
-                this.loading = false;
             }).catch(err => {
-                this.loading = false;
                 this.$message({
                     message: err,
                     type: 'error'
                 });
             })
-            
         },
         // 批量开票
         sendFn(item){
@@ -252,10 +288,8 @@ export default {
                     that.overdueOperation(res.data.code, res.data.msg);
                 }
                 // console.log(that.getSet)
-                this.loading = false;
             }).catch((err)=>{
                 // console.log(err);
-                this.loading = false;
                 this.$message({
                     message: err,
                     type: 'error'
@@ -270,6 +304,7 @@ export default {
     },
     mounted(){
         this.searchFn()
+        
     }
 }
 </script>

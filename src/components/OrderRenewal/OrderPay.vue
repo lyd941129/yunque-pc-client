@@ -3,22 +3,22 @@
     <div class="pay-container">
       <div class="pay-top dis-flex">
         <div class="pay-top-left average">
-          <div class="tip">订单提交成功，请尽快付款！订单号：XVB25648785</div>
+          <div class="tip">订单提交成功，请尽快付款！订单号 : {{itemData.subData.order_no}}</div>
           <!--       <div class="">
                        请您在<span class="red">1时30分60秒</span>内完成支付，否则订单会被自动取消。
                    </div> -->
         </div>
         <div class="pay-top-right gray">
           <div class="for-money">
-            应付金额 : <span class="money red">65,200.00</span>元
+            应付金额 : <span class="money red">{{moneyFormat(itemData.subData.pay_price)}}</span>元
           </div>
           <div class="detail-title blue" @click="showDetail = !showDetail">
-            订单详情<i class="el-icon-arrow-down"></i>
+            订单详情<i :class="['el-icon-arrow-down',{'active': showDetail}]"></i>
           </div>
         </div>
       </div>
       <div :class="['order-detail', { active: showDetail }]">
-        商品详情：软件会员，1年，60000万元。增值服务：短信通知，5000条，600元。发票识别，400次，200元。
+        {{orderDetail}}
       </div>
       <div class="pay-content">
         <div v-if="showLists" class="bank-lists">
@@ -29,7 +29,7 @@
           >
             <el-checkbox @change="checkBankFn(index)" :checked="isChecked(index)"></el-checkbox>
             <div class="bank-icon" @click="checkBankFn(index)">
-                <i :class="item.icon"></i>
+                <i :class="[{'icon': item.icon},item.icon]"></i>
                 <span>{{item.name}}</span>
             </div>
             
@@ -53,7 +53,7 @@
       </div>
       <div class="pay-bottom">
           <div @click="thirdFn(item)" class="third-item" v-for="(item,index) in thirdPartyData" :key="index">
-              <i :class="item.icon"></i>
+              <i :class="[{'icon': item.icon},item.icon]"></i>
               <span>{{item.name}}</span>
           </div>
       </div>
@@ -63,7 +63,12 @@
 
 
 <script>
+import {moneyFormat} from '../../common/mixin/moneyFormat'
 export default {
+  props: {
+      itemData:{}
+  },
+  mixins: [moneyFormat],
   data() {
     return {
       // 密码
@@ -73,13 +78,13 @@ export default {
       showLists: true,
       bankLists: [
         {
-          icon: "",
+          icon: "icon-ccb",
           name: "建设银行",
           type: "储蓄卡",
           no: "2569",
         },
         {
-          icon: "",
+          icon: "icon-cmb",
           name: "招商银行",
           type: "储蓄卡",
           no: "2569",
@@ -92,12 +97,12 @@ export default {
               name: "中国银联"
           },
           {
-              icon: "",
+              icon: "icon-wechat",
               type: "wechat",
               name: "微信支付"
           },
           {
-              icon: "",
+              icon: "icon-alipay",
               type: "alipay",
               name: "支付宝支付"
           }
@@ -105,11 +110,27 @@ export default {
     };
   },
   computed: {
+      // 选中
       isChecked(){
           let that = this;
           return function(idx){
               return that.checkBankIdx === idx
           }
+      },
+      // 订单详情
+      orderDetail(){
+          let extraArr = [], // 增值服务
+              mainText = "", // 主服务续费
+              text = ""; // 显示的文本
+          this.itemData.subData.items.map((v)=>{
+              if(v.serve_type === 1){
+                  mainText = v.serve_name + "：" + v.packages_name + "，" + v.price + "元。"
+                  return
+              }
+              extraArr.length ? extraArr.push(v.packages_name + "(" + v.duration + ")，" + v.price + "元") : extraArr.push(v.serve_name + " : " + v.packages_name + "(" + v.duration + ")，" + v.price + "元")
+          })
+          text = mainText + extraArr.join("；") + (extraArr.length ? "。" : "")
+          return text
       }
   },
   methods: {
@@ -129,6 +150,9 @@ export default {
       forgetFn(){
           console.log("忘记密码")
       }
+  },
+  mounted(){
+      console.log(this.itemData)
   }
 };
 </script>
@@ -158,6 +182,13 @@ export default {
         .detail-title {
           text-align: right;
           cursor: pointer;
+          .el-icon-arrow-down{
+              transition: transform .3s;
+              transform: rotateZ(0deg);
+              &.active{
+                  transform: rotateZ(180deg);
+              }
+          }
         }
       }
     }
@@ -192,13 +223,13 @@ export default {
                   line-height: 24px;
                   font-weight: bold;
                   width: 150px;
+                  cursor: pointer;
                   i{
-                      background-color: pink;
                       display: inline-block;
                       height: 24px;
                       width: 24px;
                       vertical-align: middle;
-                      margin-right: 10px;
+                      margin-right: 6px;
                   }
               }
           }
@@ -252,9 +283,9 @@ export default {
               display: inline-block;
               width: 16px;
               height: 16px;
-              background-color: pink;
               vertical-align: middle;
               margin-right: 6px;
+              position: initial;
           }
           span{
               line-height: 16px;

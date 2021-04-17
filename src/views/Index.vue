@@ -129,18 +129,18 @@
 			}).catch(msg => {
 				that.$message.error(msg);
 			});
-			
+			this.$on
 			// 监听，新增tab页签
 			that.$hfBus.$on("addnewtabs",(data)=>{
 				console.log(data)
-				that.adhibitionFun(data)
+				that.adhibitionFun(data.tab,data.data)
 			})
 
 
 		},
 		// 销毁时
 		destroyed(){
-			this.$off(['addnewtabs'])
+			this.$hfBus.$off(['addnewtabs'])
 		},
 		methods: {
 			handleEnterpriseList(val){// 切换企业
@@ -191,7 +191,7 @@
 				}
 				
 			},
-			adhibitionFun(objData){
+			adhibitionFun(objData,subData){
 				let that = this;
 				let obj = that.editableTabs.filter(function(s){
 					return objData.app_id == s.app_id;
@@ -206,7 +206,8 @@
 					type: objData.type ? objData.type : 'Applicationsettings',
 					app_id: objData.app_id,
 					ca_id: objData.ca_id,
-					lengthNum:  that.editableTabs.length
+					lengthNum:  that.editableTabs.length,
+					subData: subData || ""
 				});
 				that.editableTabsValue = that.addNum + '';
 				that.addNum = ++that.addNum;

@@ -1,6 +1,6 @@
 <!-- 基础数据设置 -->
 <template>
-    <div class="enterprise-box dis-flex">
+    <div class="enterprise-box dis-flex" v-loading="loading">
         <el-row class="tac">
 			<el-col :span="12">
 				<el-menu :default-active="adhibition" class="el-menu-vertical-demo" @select="handlAdhibition">
@@ -91,6 +91,7 @@ export default {
     },
     data() {
         return {
+            loading: false,
             // 左侧导航数据
             adhibitionArr: [
 
@@ -159,6 +160,7 @@ export default {
                 // 编辑
                 url = "/custom/dict/edit_value";
             }
+            this.loading = true;
             this.$axios.post(url,option).then(res => {
                 if(res.data.code === 1){
                     this.centerDialogVisible = false
@@ -249,10 +251,8 @@ export default {
                     that.overdueOperation(res.data.code, res.data.msg);
                 }
                 // console.log(that.getSet)
-                this.loading = false;
             }).catch((err)=>{
                 // console.log(err);
-                this.loading = false;
                 this.$message({
                     message: err,
                     type: 'error'

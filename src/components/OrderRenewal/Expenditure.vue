@@ -1,6 +1,6 @@
 <!-- 续费管理 -->
 <template>
-    <div class="expenditure-box">
+    <div class="expenditure-box" v-loading="loading">
         <div class="expenditure-title">
             会员级别
         </div>
@@ -137,6 +137,7 @@ export default {
     },
     data(){
         return {
+            loading: false,
             // 选中的数据
             checkData: [],
             value: "",
@@ -149,7 +150,7 @@ export default {
             },
             // 服务数据
             serveData: [
-                {
+/*                 {
                     id: "167570907815153665",
                     name: "软件续费",
                     price: "10.00",
@@ -247,7 +248,7 @@ export default {
                             sort: 0
                         }]
                     ]
-                }
+                } */
             ]
         }
     },
@@ -275,6 +276,7 @@ export default {
                     })
                     if(mealArr.length){
                         arr.push({
+                            duration: v.duration || "",
                             serve_id: v.id,
                             pack_id: mealArr.join(",")
                         })
@@ -286,14 +288,39 @@ export default {
                 return;
             }
             let sendData = {
-                params: arr
+                order_data: arr
             }
             console.log(sendData)
             console.log(this.$parent.$parent.$parent.adhibitionFun)
-            this.$hfBus.$emit("addnewtabs",{
-                app_name: "订单付款",
-                app_id: "OrderPay",
-                type: "OrderPay"
+
+
+
+
+            let url = "/custom/order/create";
+            this.loading = true
+            this.$axios.post(url,sendData).then(res => {
+                if(res.data.code === 1){
+                    console.log(res.data.data)
+                    let Data = {
+                        tab: {
+                            app_name: "订单付款",
+                            app_id: "OrderPay",
+                            type: "OrderPay"
+                        },
+                        data: res.data.data
+                    }
+
+                    this.$hfBus.$emit("addnewtabs",Data)
+                }else{
+                    this.overdueOperation(res.data.code, res.data.msg);
+                }
+                this.loading = false;
+            }).catch(err => {
+                this.loading = false;
+                this.$message({
+                    message: err,
+                    type: 'error'
+                });
             })
         },
         // 套餐选择判断提示
@@ -355,24 +382,6 @@ export default {
                     break;
             }
             console.log(data)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         },
         // 选中服务
         checkServeFn(data){
@@ -380,7 +389,25 @@ export default {
         },
         // 查询
         searchFn(){
-
+            let url = "/custom/order/package";
+            this.loading = true;
+            this.$axios.get(url).then((res)=>{
+                if(res.data.code === 1){
+                    console.log(res.data.data.list)
+                    this.serveData = res.data.data.list
+                }else{
+                    this.overdueOperation(res.data.code, res.data.msg);
+                }
+                // console.log(that.getSet)
+                this.loading = false;
+            }).catch((err)=>{
+                // console.log(err);
+                this.loading = false;
+                this.$message({
+                    message: err,
+                    type: 'error'
+                });
+            })
         }
     },
     mounted(){
