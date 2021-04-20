@@ -1,9 +1,7 @@
 <!-- 续费管理 -->
 <template>
     <div class="expenditure-box" v-loading="loading">
-        <div class="expenditure-title">
-            会员级别
-        </div>
+        <hf-title title="会员级别"></hf-title>
         <ul class="expenditure-Carousel">
             <li class="cards-list">
                 <img src="./../../../src/assets/img/vip/vip1.png"/>
@@ -21,9 +19,7 @@
                 <img src="./../../../src/assets/img/vip/vip5.png"/>
             </li>
         </ul>
-        <div class="expenditure-title">
-            选择续费
-        </div>
+        <hf-title title="选择续费"></hf-title>
         <ul class="expenditure-service">
             <li v-for="(item,index) in serveData" :key="index" class="service dis-flex">
                 <div class="check-box">
@@ -86,6 +82,7 @@
 <script>
 import empile from '../../../static/js/empile.js'
 import {moneyFormat} from '../../common/mixin/moneyFormat'
+import HfTitle from "./HfTitle"
 export default {
     props: {
 
@@ -94,6 +91,9 @@ export default {
         
     },
     mixins: [moneyFormat],
+    components: {
+        HfTitle
+    },
     computed: {
 
 
@@ -461,12 +461,6 @@ export default {
 		height: 100%;
         font-size: 16px;
         overflow-y: auto;
-        .expenditure-title{
-            padding-left: 18px;
-            background-color: #ECEFF4;
-            height: 38px;
-            line-height: 38px;
-        }
         .expenditure-Carousel{
             height: 190px;
             display: flex;

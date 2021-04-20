@@ -355,6 +355,48 @@ export default {
             switch (type) {
                 case 1:
                     url = "/custom/invoice/detail"
+                    this.$axios.get(url,{
+                        params: {
+                            id: data.invoice_log_id
+                        }
+                    }).then((res)=>{
+                        if(res.data.code === 1){
+                            
+                            this.$hfBus.$emit("addnewtabs",{
+                                tab: {
+                                    app_name: "订单付款",
+                                    app_id: "BillDetail",
+                                    type: "BillDetail"
+                                },
+                                data: res.data.data
+                            })
+                        }else{
+                            that.overdueOperation(res.data.code, res.data.msg);
+                        }
+                        // console.log(that.getSet)
+                    }).catch((err)=>{
+                        // console.log(err);
+                        this.$message({
+                            message: err,
+                            type: 'error'
+                        });
+                    })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                     break;
                 case 2:
                     this.billInitFn()

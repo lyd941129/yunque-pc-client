@@ -162,6 +162,7 @@ export default {
   height: 100%;
   background-color: #fff;
   font-size: 16px;
+  overflow-y: auto;
   .pay-container {
     width: 900px;
     margin: 22px auto 0;
