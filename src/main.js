@@ -14,6 +14,7 @@ import './common/mixin/mixin.js';
 Vue.use(ElementUI);
 Vue.config.productionTip = false;
 Vue.prototype.$axios = axios;
+Vue.prototype.$hfBus = new Vue(); // 全局监听
 // axios.defaults.baseURL = '';
 let protocol = window.location.protocol; //协议
 let host = window.location.host; //主机

@@ -60,6 +60,8 @@
 	import BasicDatas from '../components/BasicDatas/BasicDatas.vue';
 	import OrderLists from '../components/OrderRenewal/OrderLists.vue';
 	import Expenditure from '../components/OrderRenewal/Expenditure.vue';
+	import OrderPay from '../components/OrderRenewal/OrderPay.vue';
+	import BillDetail from '../components/OrderRenewal/BillDetail.vue';
 	
 	import axios from 'axios';
 	export default {
@@ -75,7 +77,9 @@
 			Divisionalmanagement,
 			BasicDatas,
 			OrderLists,
-			Expenditure
+			Expenditure,
+			OrderPay,
+			BillDetail
 		},
 		data() {
 			return {
@@ -128,6 +132,17 @@
 			}).catch(msg => {
 				that.$message.error(msg);
 			});
+			// 监听，新增tab页签
+			that.$hfBus.$on("addnewtabs",(data)=>{
+				console.log(data)
+				that.adhibitionFun(data.tab,data.data)
+			})
+
+
+		},
+		// 销毁时
+		destroyed(){
+			this.$hfBus.$off(['addnewtabs'])
 		},
 		methods: {
 			handleEnterpriseList(val){// 切换企业
@@ -178,7 +193,7 @@
 				}
 				
 			},
-			adhibitionFun(objData){
+			adhibitionFun(objData,subData){
 				let that = this;
 				let obj = that.editableTabs.filter(function(s){
 					return objData.app_id == s.app_id;
@@ -193,7 +208,8 @@
 					type: objData.type ? objData.type : 'Applicationsettings',
 					app_id: objData.app_id,
 					ca_id: objData.ca_id,
-					lengthNum:  that.editableTabs.length
+					lengthNum:  that.editableTabs.length,
+					subData: subData || ""
 				});
 				that.editableTabsValue = that.addNum + '';
 				that.addNum = ++that.addNum;
