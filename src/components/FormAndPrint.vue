@@ -19,7 +19,7 @@
 			</el-table-column>
 		</el-table>
 		<h4>选择要使用的打印模板样式</h4>
-		<el-table :data="print" style="width: 100%" max-height="300px" border show-overflow-tooltip="false" @row-click="getTableDataPrint" v-if="mmp">
+		<el-table :data="print ? print : []" style="width: 100%" max-height="300px" border show-overflow-tooltip="false" @row-click="getTableDataPrint" v-if="mmp">
 			<el-table-column width="50">
 				<template slot-scope="scope">
 					<el-radio v-model="radio2" :label="scope.row.id"></el-radio>
@@ -62,9 +62,7 @@
 	import subassemblyElement from './Element.vue';
 	export default {
 		props:{
-			fromData:{
-				type: Array
-			},
+			fromData:{},
 			enableForm:{
 				type: String
 			},

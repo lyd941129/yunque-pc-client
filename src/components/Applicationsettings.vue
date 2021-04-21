@@ -17,8 +17,8 @@
 			<Flow :selectData="fieldSelect" :flowData="getSet.flow.flow_set" :sysCode="getSet.sys_code" :formConfigData="getSet.formConfig" 
 			:selectDataDispose="jurisdictionExample" v-show="adhibition === 'flow'"></Flow>
 			<Advanced :advData.sync="getSet.base" v-show="adhibition === 'advanced'"></Advanced>
-			<MsgTemplate key="search" :selectData="fieldSelect" :templateData.sync="getSet.head" :searchData="getSet.search" searchJudge="yes" v-if="adhibition === 'search'"></MsgTemplate>
-			<MsgTemplate key="msg" :selectData="fieldSelect" :templateData.sync="getSet.template" searchJudge="no" v-if="adhibition === 'msg'"></MsgTemplate>
+			<MsgTemplate key="search" :selectData="fieldSelect" :templateData.sync="getSet.head" :searchData="getSet.search" searchJudge="yes" v-if="adhibition === 'search' && jiazai"></MsgTemplate>
+			<MsgTemplate key="msg" :selectData="fieldSelect" :templateData.sync="getSet.template" searchJudge="no" v-if="adhibition === 'msg' && jiazai"></MsgTemplate>
 		</div>
 	</div>
 </template>
@@ -118,6 +118,10 @@
 				fieldSelect: [],
 				jurisdictionExample: [],
 				field_main_num: 0,
+				jiazai: false,
+				isRefresh_l_s: false,
+				base_id: '',
+				list_type: 'list_text'
 			}
 		},
 		created() {
@@ -127,6 +131,9 @@
 			this.$axios.post(url).then(res => {
 				if(res.data.code === 1){
 					that.getSet = res.data.data;
+					that.base_id = res.data.data.base.id;
+					res.data.data.base.list_type && (that.list_type = res.data.data.base.list_type);
+					console.log(that.getSet);
 					let obj = that.getSet.form.filter((item) => item.id === that.getSet.base.enable_form);
 					obj.length && (this.fieldSelect = obj[0].field);
 					if(!that.getSet.flow.flow_set || !that.getSet.flow.flow_set.type){
@@ -150,17 +157,71 @@
 							"field_vice_show": ""// 副标题展示文字
 						}
 					}
-					if(!that.getSet.head.field_main_show){
-						that.getSet.head = {
-							"id": "",
-							"field_main": [],
-							"field_main_title": "",
-							"field_main_show": "",
-							"field_vice": [],
-							"field_vice_title": "",
-							"field_vice_show": ""
-						}
+					switch(that.list_type){
+						case "list_text":
+							that.getSet.head = {
+								'id': res.data.data.base.id,
+								'field_main': res.data.data.head.field_main ? res.data.data.head.field_main : [],//主标题(主标题设置)
+								'field_main_title': res.data.data.head.field_main_title ? res.data.data.head.field_main_title : '',
+								'field_main_show': res.data.data.head.field_main_show ? res.data.data.head.field_main_show : '',
+								'field_vice': res.data.data.head.field_vice ? res.data.data.head.field_vice : [],//副标题（两列显示）
+								'field_vice_title': res.data.data.head.field_vice_title ? res.data.data.head.field_vice_title : '',
+								'field_vice_show': res.data.data.head.field_vice_show ? res.data.data.head.field_vice_show : '',
+								'list_type': that.list_type ? that.list_type : ''
+							}
+							break;
+						case "list_img":
+							that.getSet.head = {
+								'id': res.data.data.base.id,
+								'field_main': res.data.data.head.field_main ? res.data.data.head.field_main : [],//主标题(主标题设置)
+								'field_main_title': res.data.data.head.field_main_title ? res.data.data.head.field_main_title : '',
+								'field_main_show': res.data.data.head.field_main_show ? res.data.data.head.field_main_show : '',
+								'field_content': res.data.data.head.field_content ? res.data.data.head.field_content : [],//内容标题（一列显示）
+								'field_content_title': res.data.data.head.field_content_title ? res.data.data.head.field_content_title : '',
+								'field_content_show': res.data.data.head.field_content_show ? res.data.data.head.field_content_show : '',
+								'field_vice': res.data.data.head.field_vice ? res.data.data.head.field_vice : [],//副标题（两列显示）
+								'field_vice_title': res.data.data.head.field_vice_title ? res.data.data.head.field_vice_title : '',
+								'field_vice_show': res.data.data.head.field_vice_show ? res.data.data.head.field_vice_show : '',
+								'field_url': res.data.data.head.field_url ? res.data.data.head.field_url : [],// 图片配置
+								'list_type': that.list_type ? that.list_type : ''
+							}
+							break;
+						case "list_down":
+						case "list_shop":
+							that.getSet.head = {
+								'id': res.data.data.base.id,
+								'field_main': res.data.data.head.field_main ? res.data.data.head.field_main : [],//主标题(主标题设置)
+								'field_main_title': res.data.data.head.field_main_title ? res.data.data.head.field_main_title : '',
+								'field_main_show': res.data.data.head.field_main_show ? res.data.data.head.field_main_show : '',
+								'field_content': res.data.data.head.field_content ? res.data.data.head.field_content : [],//内容标题（一列显示）
+								'field_content_title': res.data.data.head.field_content_title ? res.data.data.head.field_content_title : '',
+								'field_content_show': res.data.data.head.field_content_show ? res.data.data.head.field_content_show : '',
+								'field_vice': res.data.data.head.field_vice ? res.data.data.head.field_vice : [],//副标题（两列显示）
+								'field_vice_title': res.data.data.head.field_vice_title ? res.data.data.head.field_vice_title : '',
+								'field_vice_show': res.data.data.head.field_vice_show ? res.data.data.head.field_vice_show : '',
+								'field_url': res.data.data.head.field_url ? res.data.data.head.field_url : '',// 图片配置
+								'list_type': that.list_type ? that.list_type : ''
+							}
+							break;
 					}
+					// if(!that.getSet.head.field_content){
+						// that.getSet.head.list_type = 'list_down';
+					// 	that.getSet.head.field_content = [];
+					// 	that.getSet.head.field_content_show = '';
+					// 	that.getSet.head.field_content_title = '';
+					// 	that.getSet.head.field_url = [];
+					// }
+					// if(!that.getSet.head.field_main_show){
+					// 	that.getSet.head = {
+					// 		"id": "",
+					// 		"field_main": [],
+					// 		"field_main_title": "",
+					// 		"field_main_show": "",
+					// 		"field_vice": [],
+					// 		"field_vice_title": "",
+					// 		"field_vice_show": ""
+					// 	}
+					// }
 				}else{
 					that.overdueOperation(res.data.code, res.data.msg);
 					setTimeout(function(){
@@ -171,8 +232,18 @@
 						}
 					}, 1000);
 				}
-				// console.log(that.getSet)
-				this.loading = false;
+				// 测试数据：列表的图文数据
+				// that.getSet.head.list_type = 'list_down';
+				// that.getSet.head.field_content = [];
+				// that.getSet.head.field_content_show = '';
+				// that.getSet.head.field_content_title = '';
+				// that.getSet.head.field_url = [];
+				// 测试数据：列表的图文数据END
+				// console.log(that.getSet);
+				that.$nextTick(function(){
+					that.jiazai = true;
+				});
+				that.loading = false;
 			}).catch(err => {
 				// console.log(err);
 				this.loading = false;
@@ -201,6 +272,7 @@
 						let that = this;
 						let obj = this.getSet.form.filter((item) => item.id === val);
 						this.fieldSelect = obj[0].field;
+						// console.log(this.fieldSelect)
 						// this.getSet.template.field_main = this.getSet.template.field_vice = '';
 						that.jurisdictionExample = [];
 						this.fieldSelect && this.fieldSelect.length && this.fieldSelect.map((item) => {
@@ -211,6 +283,98 @@
 								fieldId: item.id
 							});
 						});
+						if(that.isRefresh_l_s){
+							// console.log('重新请求列表设置数据');
+							that.$axios.post('/api/flow/default', {
+								'table_id': val
+							}).then(res => {
+								if(res.data.code === 1){
+									that.jiazai = false;
+									console.log(res);
+									let obj = that.getSet.form.filter((item) => item.id === that.getSet.base.enable_form);
+									obj.length && (that.fieldSelect = obj[0].field);
+									that.getSet.search = res.data.data.search;
+									if(Array.isArray(that.getSet.template)){
+										that.getSet.template = {
+											"ca_id": "",//企业应用id
+											"field_main": "",// 主标题id
+											"field_main_title": "", // 主标题id组成的字符
+											"field_main_show": "",// 主标题展示文字
+											"field_vice": "",// 副标题id
+											"field_vice_title": "",// 副标题id组成的字符
+											"field_vice_show": ""// 副标题展示文字
+										}
+									}else{
+										that.getSet.template = {
+											"ca_id": "",//企业应用id
+											"field_main": res.data.data.template.field_main ? res.data.data.template.field_main : [],// 主标题id
+											"field_main_title": res.data.data.template.field_main_title ? res.data.data.template.field_main_title : '', // 主标题id组成的字符
+											'field_main_show': res.data.data.template.field_main_show ? res.data.data.template.field_main_show : '',
+											'field_vice': res.data.data.template.field_vice ? res.data.data.template.field_vice : [],//副标题（两列显示）
+											'field_vice_title': res.data.data.template.field_vice_title ? res.data.data.template.field_vice_title : '',
+											'field_vice_show': res.data.data.template.field_vice_show ? res.data.data.template.field_vice_show : '',
+										}
+									}
+									switch(that.list_type){
+										case "list_text":
+											that.getSet.head = {
+												'id': that.base_id,
+												'field_main': res.data.data.head.field_main ? res.data.data.head.field_main : [],//主标题(主标题设置)
+												'field_main_title': res.data.data.head.field_main_title ? res.data.data.head.field_main_title : '',
+												'field_main_show': res.data.data.head.field_main_show ? res.data.data.head.field_main_show : '',
+												'field_vice': res.data.data.head.field_vice ? res.data.data.head.field_vice : [],//副标题（两列显示）
+												'field_vice_title': res.data.data.head.field_vice_title ? res.data.data.head.field_vice_title : '',
+												'field_vice_show': res.data.data.head.field_vice_show ? res.data.data.head.field_vice_show : '',
+											}
+											break;
+										case "list_img":
+											that.getSet.head = {
+												'id': that.base_id,
+												'field_main': res.data.data.head.field_main ? res.data.data.head.field_main : [],//主标题(主标题设置)
+												'field_main_title': res.data.data.head.field_main_title ? res.data.data.head.field_main_title : '',
+												'field_main_show': res.data.data.head.field_main_show ? res.data.data.head.field_main_show : '',
+												'field_content': res.data.data.head.field_content ? res.data.data.head.field_content : [],//内容标题（一列显示）
+												'field_content_title': res.data.data.head.field_content_title ? res.data.data.head.field_content_title : '',
+												'field_content_show': res.data.data.head.field_content_show ? res.data.data.head.field_content_show : '',
+												'field_vice': res.data.data.head.field_vice ? res.data.data.head.field_vice : [],//副标题（两列显示）
+												'field_vice_title': res.data.data.head.field_vice_title ? res.data.data.head.field_vice_title : '',
+												'field_vice_show': res.data.data.head.field_vice_show ? res.data.data.head.field_vice_show : '',
+												'field_url': res.data.data.head.field_url ? res.data.data.head.field_url : [],// 图片配置
+											}
+											break;
+										case "list_down":
+										case "list_shop":
+											that.getSet.head = {
+												'id': that.base_id,
+												'field_main': res.data.data.head.field_main ? res.data.data.head.field_main : [],//主标题(主标题设置)
+												'field_main_title': res.data.data.head.field_main_title ? res.data.data.head.field_main_title : '',
+												'field_main_show': res.data.data.head.field_main_show ? res.data.data.head.field_main_show : '',
+												'field_content': res.data.data.head.field_content ? res.data.data.head.field_content : [],//内容标题（一列显示）
+												'field_content_title': res.data.data.head.field_content_title ? res.data.data.head.field_content_title : '',
+												'field_content_show': res.data.data.head.field_content_show ? res.data.data.head.field_content_show : '',
+												'field_vice': res.data.data.head.field_vice ? res.data.data.head.field_vice : [],//副标题（两列显示）
+												'field_vice_title': res.data.data.head.field_vice_title ? res.data.data.head.field_vice_title : '',
+												'field_vice_show': res.data.data.head.field_vice_show ? res.data.data.head.field_vice_show : '',
+												'field_url': res.data.data.head.field_url ? res.data.data.head.field_url : '',// 图片配置
+												'list_type': 'list_shop'
+											}
+											break;
+									}
+									that.$nextTick(function(){
+										that.jiazai = true;
+									});
+								}else{
+									that.overdueOperation(res.data.code, res.data.msg);
+								}
+							}).catch(err => {
+								that.$message({
+									showClose: true,
+									message: err,
+									type: 'error'
+								});
+							});
+						}
+						!that.isRefresh_l_s && (that.isRefresh_l_s = true);
 					}
 				}
 			}

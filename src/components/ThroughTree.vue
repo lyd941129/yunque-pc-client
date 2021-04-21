@@ -49,12 +49,8 @@
 	export default {
 		name: 'ThroughTree',
 		props:{
-			treeData:{
-				type: Array
-			},
-			treeSaveData:{
-				type: Array
-			},
+			treeData:{},
+			treeSaveData:{},
 			radioed:{
 				
 			}

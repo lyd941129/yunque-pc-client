@@ -14,6 +14,7 @@
 			<el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" @select="handleSelect">
 				<el-menu-item index="personage">个人管理</el-menu-item>
 				<el-menu-item index="enterprise">企业管理</el-menu-item>
+				<el-menu-item index="market">应用市场</el-menu-item>
 			</el-menu>
 			<el-row class="dropdown">
 				<el-button v-if="releaseShow()" type="primary" class="issue" @click="release">发布</el-button>
@@ -183,7 +184,7 @@
 					return objData.app_id == s.app_id;
 				});
 				if(obj.length > 0){
-					that.editableTabsValue = obj[0].lengthNum + 1 + '';
+					that.editableTabsValue = obj[0].name + '';
 					return
 				}
 				that.editableTabs.push({
@@ -233,8 +234,11 @@
 				this.flowConditionArr = [];
 				this.flowConditionFun(postGetSet.flow.flow_set);
 				postGetSet.conditionId = this.flowConditionArr;
+				delete postGetSet.head.id;
+				delete postGetSet.head.list_type;
 				// console.log(postGetSet);
 				// console.log(JSON.stringify(postGetSet));
+				// return
 				this.$confirm('确认发布吗?', '提示', {
 					confirmButtonText: '确定',
 					cancelButtonText: '取消',

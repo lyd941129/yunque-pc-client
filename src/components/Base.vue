@@ -3,16 +3,16 @@
 	<div class="base">
 		<el-form ref="form" label-width="80px">
 			<el-form-item label="应用名称">
-				<el-input v-model="baseData.app_name" style="width: 200px;" disabled></el-input>
-			</el-form-item>
-			<el-form-item label="功能介绍">
-				<el-input type="textarea" v-model="baseData.describe" style="width: 70%;" disabled></el-input>
+				<el-input v-model="baseData.app_name" style="width: 300px;" disabled></el-input>
 			</el-form-item>
 			<el-form-item label="所属模块">
-				<el-input v-model="baseData.app_module" style="width: 200px;" disabled></el-input>
+				<el-input v-model="baseData.app_module" style="width: 300px;" disabled></el-input>
 			</el-form-item>
 			<el-form-item label="流程标题">
-				<el-input v-model="baseData.flow_title" style="width: 200px;"></el-input>
+				<el-input v-model="baseData.flow_title" style="width: 300px;"></el-input>
+			</el-form-item>
+			<el-form-item label="功能介绍">
+				<el-input type="textarea" v-model="baseData.describe" style="width: 300px;" disabled></el-input>
 			</el-form-item>
 			<el-form-item label="是否启用">
 				<el-radio-group v-model="baseData.installed">
