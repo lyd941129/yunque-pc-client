@@ -364,7 +364,7 @@ export default {
                             
                             this.$hfBus.$emit("addnewtabs",{
                                 tab: {
-                                    app_name: "订单付款",
+                                    app_name: "发票详情",
                                     app_id: "BillDetail",
                                     type: "BillDetail"
                                 },

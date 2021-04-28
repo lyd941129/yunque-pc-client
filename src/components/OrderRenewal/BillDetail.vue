@@ -12,7 +12,6 @@
           <div class="order-detail">
             <el-table ref="multipleTable" :border='true' :data="itemData.subData.order" tooltip-effect="dark" style="width: 100%"
             :select-on-indeterminate='false'>
-
                 <el-table-column label="订单状态" prop="pay_status" align="center">
                     <template slot-scope="scope">
                         <div>{{detailFn("pay_status",scope.row.pay_status)}}</div>
@@ -105,6 +104,10 @@ export default {
             {
                 title: "公司税号",
                 params: "tax_number"
+            },
+            {
+                title: "开票金额（元）",
+                params: "money"
             }
         ],
         mailData: [
@@ -217,8 +220,8 @@ export default {
                   }
               }
               .label{
-                  padding: 10px;
-                  width: 120px;
+                  padding: 10px 0 10px 10px;
+                  width: 130px;
                   font-weight: bold;
                   border-right: 1px solid #eaf8ff;
               }
