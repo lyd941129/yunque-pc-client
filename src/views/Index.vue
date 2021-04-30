@@ -38,9 +38,16 @@
 			</el-row>
 		</el-header>
 		<el-main>
-			<el-tabs id="main-tabs" v-model="editableTabsValue" type="card" closable @tab-remove="removeTab">
+			<!-- 企业管理 -->
+			<el-tabs v-show="activeIndex === 'enterprise'" id="main-tabs" v-model="editableTabsValue" type="card" closable @tab-remove="removeTab">
 				<el-tab-pane v-for="(item, index) in editableTabs" :key="item.name" :label="item.title" :name="item.name">
 					<component :ref="'applicat'+ item.name" :is="item.type" :key="item.type" :adhibitionFun="adhibitionFun" :itemData="item" :editableTabs.sync="editableTabs" :editableTabsValue.sync="editableTabsValue"></component>
+				</el-tab-pane>
+			</el-tabs>
+			<!-- 应用市场 -->
+			<el-tabs v-show="activeIndex === 'market'" id="main-tabs" v-model="appTabsValue" type="card" closable>
+				<el-tab-pane v-for="(item, index) in appTabs" :key="item.name" :label="item.title" :name="item.name">
+					<component :ref="'app'+ item.name" :is="item.type" :key="item.type"></component>
 				</el-tab-pane>
 			</el-tabs>
 		</el-main>
@@ -48,11 +55,6 @@
 </template>
 
 <script>
-	// import Flow from './Flow.vue';
-	// import BasePage from '../components/Base.vue';
-	// import Advanced from '../components/Advanced.vue';
-	// import FromAndPrint from '../components/FormAndPrint.vue';
-	// import MsgTemplate from '../components/MsgTemplate.vue';
 	import Management from '../components/Management.vue';
 	import Applicationsettings from '../components/Applicationsettings.vue';
 	import Personnelmanagement from '../components/Personnelmanagement.vue';
@@ -62,15 +64,11 @@
 	import Expenditure from '../components/OrderRenewal/Expenditure.vue';
 	import OrderPay from '../components/OrderRenewal/OrderPay.vue';
 	import BillDetail from '../components/OrderRenewal/BillDetail.vue';
+	import Appmarket from '../components/Appmarket/Appmarket.vue';
 	
 	import axios from 'axios';
 	export default {
 		components: {
-			// Flow,
-			// BasePage,
-			// Advanced,
-			// FromAndPrint,
-			// MsgTemplate,
 			Management,
 			Applicationsettings,
 			Personnelmanagement,
@@ -79,16 +77,24 @@
 			OrderLists,
 			Expenditure,
 			OrderPay,
-			BillDetail
+			BillDetail,
+			Appmarket,
 		},
 		data() {
 			return {
 				activeIndex: 'enterprise',
 				editableTabsValue: '1',
+				appTabsValue: '1',
 				editableTabs: [{
 						title: '企业管理',
 						name: '1',
 						type: 'Management'
+					},
+				],
+				appTabs: [{
+						title: '应用中心',
+						name: '1',
+						type: 'Appmarket'
 					},
 				],
 				flowConditionArr: [],
@@ -115,10 +121,6 @@
 		},
 		created() {
 			let that = this;
-			// console.log(this.$store.state.loginData)
-			// if(localStorage.getItem('tokenTime') == null){
-			// 	return;
-			// }
 			this.loginData = localStorage.getItem("loginDatac") ? JSON.parse(localStorage.getItem("loginDatac")) : null;
 			// console.log(that.loginData)
 			// 获取企业列表
@@ -136,15 +138,14 @@
 			that.$hfBus.$on("addnewtabs",(data)=>{
 				console.log(data)
 				that.adhibitionFun(data.tab,data.data)
-			})
-
-
+			});
 		},
 		// 销毁时
 		destroyed(){
 			this.$hfBus.$off(['addnewtabs'])
 		},
 		methods: {
+			// 企业管理
 			handleEnterpriseList(val){// 切换企业
 				let that = this;
 				that.loading = true;
@@ -193,7 +194,7 @@
 				}
 				
 			},
-			adhibitionFun(objData,subData){
+			adhibitionFun(objData,subData){// 新增页签
 				let that = this;
 				let obj = that.editableTabs.filter(function(s){
 					return objData.app_id == s.app_id;
@@ -214,8 +215,10 @@
 				that.editableTabsValue = that.addNum + '';
 				that.addNum = ++that.addNum;
 			},
-			handleSelect(key, keyPath) {
+			handleSelect(key, keyPath) {// 顶部分栏切换事件
 				// console.log(key, keyPath);
+				this.activeIndex = key;
+				// console.log(this.activeIndex);
 			},
 			handlAdhibition(key) {
 				this.adhibition = key;
@@ -239,7 +242,7 @@
 				this.editableTabsValue = activeName;
 				this.editableTabs = tabs.filter(tab => tab.name !== targetName);
 			},
-			release() {
+			release() {// 发布按钮事件
 				let postGetSet = this.$refs['applicat'+(this.editableTabsValue)][0].getSet;
 				let that = this;
 				for(let key in postGetSet.formConfig){
@@ -311,6 +314,7 @@
 				that.editableTabsValue = '1';
 				that.$refs.applicat1[0].getData();
 			}
+			// 应用市场
 		},
 	}
 </script>
@@ -444,11 +448,33 @@
 							cursor: pointer;
 							align-items: center;
 							transition: all 0.3s;
+							position: relative;
 							span{
 								margin-left: 20px;
 							}
+							&.uninstalled{
+								background-color: rgba(240, 240, 240, 0.5);
+								img,
+								i,
+								span{
+									opacity: 0.5;
+								}
+							}
 							&:hover{
 								border: 1px solid #a4a8b1;
+							}
+							.not-enabled{
+								position: absolute;
+								top: 0;
+								right: 0;
+								width: 46px;
+								height: 18px;
+								opacity: 1;
+								background: #f39800;
+								border-radius: 4px 0px 4px 0px;
+								color: #FFFFFF;
+								font-size: 12px;
+								text-align: center;
 							}
 						}
 					}
