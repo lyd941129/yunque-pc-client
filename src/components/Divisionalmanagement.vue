@@ -74,9 +74,9 @@
 					</div>
 					<div class="list-btn">
 						<el-row>
-							<el-button round type="primary">添加成员</el-button>
-							<el-button round>调整部门</el-button>
-							<el-button round type="danger">删除</el-button>
+							<el-button @click="operatePersonFn(1)" round type="primary">添加成员</el-button>
+							<el-button @click="operatePersonFn(2)" round>调整部门</el-button>
+							<el-button @click="operatePersonFn(3)" round type="danger">删除</el-button>
 						</el-row>
 					</div>
 					<div class="list-contant">
@@ -366,7 +366,7 @@
 				this.loading = true
 				this.$axios.post(Data.url,Data.option).then(res => {
 					if(res.data.code === 1){
-						success()
+						success(res.data)
 					}else{
 						this.overdueOperation(res.data.code, res.data.msg);
 					}
@@ -454,6 +454,44 @@
 						}).catch(err => {
 							
 						});
+						break;
+					default:
+						break;
+				}
+			},
+			/* 部门人员操作按钮
+			type: 1 添加成员；
+				  2 调整部门
+				  3 删除
+			 */
+			operatePersonFn(type){
+				let that = this;
+				switch (type) {
+					case 1:
+						
+						break;
+					case 2:
+						
+						break;
+					case 3:
+						let selectData = this.$refs.multipleTable.selection;
+						if(selectData.length === 0){
+							this.$message.error('请至少勾选一项');
+							return
+						}
+						let arr = []
+						selectData.map((v)=>{
+							arr.push(v.id)
+						})
+						that.postFn({
+							url: "/custom/depart/remove_user",
+							option: {
+								depart_id: that.checkData.id,
+								user_ids: arr
+							}
+						},(res)=>{
+							that.childPerson(that.checkData);
+						})
 						break;
 					default:
 						break;
