@@ -7,6 +7,7 @@
 				<el-input size="mini" placeholder="搜索" suffix-icon="el-icon-search" v-model="filterText"></el-input>
 			</div>
 			<div class="wordbox">
+				<!-- @node-click="" -->
 				<el-tree @check="getData" :check-strictly="true" show-checkbox class="filter-tree" node-key="id" :data="treeData" :default-expanded-keys="defaultShowNodes"
 				:props="defaultProps" :filter-node-method="filterNode" ref="tree">
 					<span class="slot-t-node self-box" slot-scope="{node, data}">
@@ -53,6 +54,10 @@
 			treeSaveData:{},
 			radioed:{
 				
+			},
+			isMultiple:{
+				type: Boolean,
+				default: true
 			}
 		},
 		data() {
@@ -98,8 +103,11 @@
 			filterText(val) {
 				this.$refs.tree.filter(val);
 			},
-			keyarr(val){
-				this.$emit('update:treeSaveData', val);
+			keyarr(val,old){
+				if(JSON.stringify(val) !== JSON.stringify(old)){
+					this.$emit('update:treeSaveData', val);
+				}
+				
 			},
 			treeSaveData(val){
 				if(val){
@@ -138,6 +146,13 @@
 
 				} else {
 					this.keyarr = []
+				}
+				if(!this.isMultiple){
+					// 单选
+					let delNode = this.keyarr.find((e)=>{
+						return e.id !== a.id
+					})
+					this.keyarr.length > 1 ? this.removeData(delNode) : ""
 				}
 			},
 			setCheckedNodes(arr) {
