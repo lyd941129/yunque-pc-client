@@ -2,146 +2,70 @@
 <template>
 	<div class="personnelmanagement" v-loading="loading">
 		<el-form :inline="true" :model="formInline" class="demo-form-inline">
+			<el-form-item label="角色" v-if="itemData.app_id === 'jsgl'">
+				<el-input @keyup.enter.native="onScreen" v-model="formInline.role_name" placeholder="请输入角色名称" clearable></el-input>
+			</el-form-item>
 			<el-form-item label="人员名称" v-if="itemData.app_id === 'rygl'">
 				<el-input @keyup.enter.native="onScreen" v-model="formInline.username" placeholder="请输入人员名称" clearable></el-input>
 			</el-form-item>
 			<el-form-item label="部门名称" v-if="itemData.app_id === 'rygl'">
 				<el-input @keyup.enter.native="onScreen" v-model="formInline.depart_name" placeholder="请输入部门名称" clearable></el-input>
 			</el-form-item>
-			<el-form-item label="角色名称" v-if="itemData.app_id === 'jsgl'">
-				<el-input @keyup.enter.native="onScreen" v-model="formInline.role_name" placeholder="请输入角色名称" clearable></el-input>
-			</el-form-item>
-			<el-form-item label="项目角色名称" v-if="itemData.app_id === 'xmgl'">
-				<el-input @keyup.enter.native="onScreen" v-model="formInline.role_name" placeholder="请输入角色名称" clearable></el-input>
-			</el-form-item>
-			<!-- <el-form-item label="关键字">
-				<el-input v-model="formInline.keyword" placeholder="请输入关键字"></el-input>
-			</el-form-item>
-			<el-form-item label="员工状态">
-				<el-select v-model="formInline.status" filterable placeholder="请选择..." clearable>
-					<el-option v-for="item in options" :key="item" :label="item" :value="item">
-					</el-option>
-				</el-select>
-			</el-form-item>
-			<el-form-item label="入职时间">
-					<el-date-picker type="date" placeholder="选择日期" v-model="formInline.dateStart"></el-date-picker>
-					——
-					<el-date-picker type="date" placeholder="选择日期" v-model="formInline.dateEnd"></el-date-picker>
-			</el-form-item> -->
 			<el-form-item>
 				<el-button @click="onScreen">确认筛选</el-button>
 			</el-form-item>
 		</el-form>
-		<el-row v-if="itemData.app_id === 'xmgl'">
-			<el-button type="primary" class="btn-blue" @click="roleProjectAdd">新增</el-button>
-			<el-button type="primary" class="btn-blue" @click="roleProjectEdit">编辑</el-button>
+		<el-row class="btn-row">
+			<el-button type="primary" class="btn-blue" @click="depRoleEditFn(1)">调整部门</el-button>
+			<el-button type="primary" class="btn-blue" @click="depRoleEditFn(2)">调整角色</el-button>
 			<el-button type="danger" class="btn-red" @click='roleProjectDele'>批量删除</el-button>
 		</el-row>
 		<!-- 人员管理 -->
-		<div class="table-box" v-if="itemData.app_id === 'rygl'">
+		<div class="table-box table-box-btn" v-if="itemData.app_id === 'rygl'">
 			<el-table ref="multipleTable" :border='true' :data="tableData" tooltip-effect="dark" style="width: 100%"
 			:select-on-indeterminate='false' height="100%" @row-click="on_select">
 				<el-table-column type="selection" width="55"></el-table-column>
 				<el-table-column label="姓名" prop="username" align="center" width="80"></el-table-column>
 				<el-table-column label="生日" prop="birthday" align="center" width="160">
-					<!-- <template slot-scope="scope">
-						<div>{{scope.row.birthday ? getLocalTime(scope.row.birthday) : ''}}</div>
-					</template> -->
 				</el-table-column>
 				<el-table-column label="性别" align="center" width="160">
 					<template slot-scope="scope">
 						<div>{{scope.row.gender ? '女' : '男'}}</div>
 					</template>
 				</el-table-column>
-				<!-- <el-table-column label="工号" prop="jobNumber" align="center"></el-table-column> -->
 				<el-table-column label="所属部门" prop="depart_name" align="center"></el-table-column>
-				<!-- <el-table-column label="职位" prop="position" align="center"></el-table-column> -->
-				<!-- <el-table-column label="角色" prop="role" align="center"></el-table-column> -->
 				<el-table-column label="手机号" prop="phone" align="center"></el-table-column>
 				<el-table-column label="是否启用" prop="installed" align="center">
 					<template slot-scope="scope">
 						<div>{{scope.row.installed ? '启用' : '不启用'}}</div>
 					</template>
 				</el-table-column>
-				<!-- <el-table-column label="邮箱" prop="mailbox" align="center" width="180"></el-table-column> -->
-				<!-- <el-table-column label="状态" prop="installed" align="center" width="70">
-					<template slot-scope="scope">
-						<div :class="getStatus(scope.row.installed ? '正式' : '使用')">{{scope.row.installed ? '正式' : '使用'}}</div>
-					</template>
-				</el-table-column> -->
-			</el-table>
-		</div>
-		<!-- 角色管理 -->
-		<div class="table-box" v-if="itemData.app_id === 'jsgl'">
-			<el-table ref="multipleTable" :border='true' :data="tableData" tooltip-effect="dark" style="width: 100%"
-			:select-on-indeterminate='false' height="100%" @row-click="on_select">
-				<el-table-column type="selection" width="55"></el-table-column>
-				<el-table-column label="角色名称" prop="role_name" align="center"></el-table-column>
-				<el-table-column label="管理员" prop="birthday" align="center">
-					<template slot-scope="scope">
-						<div>{{scope.row.is_manager ? '是' : '否'}}</div>
-					</template>
-				</el-table-column>
-				<el-table-column label="经办人" prop="handler_name" align="center"></el-table-column>
-				<el-table-column label="是否启用" prop="installed" align="center">
-					<template slot-scope="scope">
-						<div>{{scope.row.installed ? '启用' : '不启用'}}</div>
-					</template>
-				</el-table-column>
-				<el-table-column label="最后修改时间" prop="update_time" align="center">
-					<template slot-scope="scope">
-						<div>{{scope.row.update_time ? getLocalTime(scope.row.update_time) : ''}}</div>
-					</template>
-				</el-table-column>
-			</el-table>
-		</div>
-		<!-- 项目角色管理 -->
-		<div class="table-box" v-if="itemData.app_id === 'xmgl'" :class="{'table-box-btn': (itemData.app_id === 'xmgl')}">
-			<el-table ref="multipleTable" :border='true' :data="tableData" tooltip-effect="dark" style="width: 100%"
-			:select-on-indeterminate='false' height="100%" @row-click="on_select">
-				<el-table-column type="selection" width="55"></el-table-column>
-				<el-table-column label="角色名称" prop="role_name" align="center"></el-table-column>
-				<el-table-column label="职责描述" prop="role_describe" align="center"></el-table-column>
-				<el-table-column label="经办人" prop="handler_name" align="center"></el-table-column>
-				<el-table-column label="最后修改时间" prop="update_time" align="center">
-					<template slot-scope="scope">
-						<div>{{scope.row.update_time ? getLocalTime(scope.row.update_time) : ''}}</div>
-					</template>
-				</el-table-column>
 			</el-table>
 		</div>
 		<el-pagination @current-change="handleCurrentChange" :current-page="currentPage" @size-change="sizeChange"
-		:page-size="pageSize" layout="sizes, total, prev, pager, next, jumper" :total="total">
+		:page-size="searchData.page_size" :page-sizes="pageSizes" layout="sizes, total, prev, pager, next, jumper" :total="total">
 		</el-pagination>
-		<!-- 弹框 -->
-		<el-dialog :title="title" :visible.sync="centerDialogVisible" center width='530px'>
-			<el-form :model="form" :rules="rules" ref="form" label-width="135px">
-				<el-form-item label="角色名称" prop="role_name">
-					<el-input v-model="form.role_name" autocomplete="off" clearable></el-input>
-				</el-form-item>
-				<el-form-item label="职责描述" prop="role_describe" clearable>
-					<el-input v-model="form.role_describe" autocomplete="off"></el-input>
-				</el-form-item>
-				<el-form-item label="是否启用" prop="installed">
-					<el-radio-group v-model="form.installed">
-						<el-radio label="1">启用</el-radio>
-						<el-radio label="0">停用</el-radio>
-					</el-radio-group>
-				</el-form-item>
-			</el-form>
+		<!-- 添加成员弹框 -->
+		<el-dialog :title="throughTitle" :visible.sync="personEditDalog" width='530px'>
+			<ThroughTree :isMultiple="throuthMultiple" :treeData="personLists" :treeSaveData.sync="savePersonData"></ThroughTree>
 			<span slot="footer" class="dialog-footer">
-				<el-button type="primary" class="btn-dialog" @click="createAn('form')">确 定</el-button>
+				<el-button type="primary" @click="addPersonFn">确 认</el-button>
+				<el-button @click="personEditDalog = false">取 消</el-button>
 			</span>
 		</el-dialog>
 	</div>
 </template>
 
 <script>
+	import ThroughTree from './ThroughTree.vue';
 	export default {
 		props: {
 			itemData: {},
 			editableTabs: {},
 			editableTabsValue: {},
+		},
+		components: {
+			ThroughTree
 		},
 		data() {
 			return {
@@ -154,37 +78,30 @@
 					dateStart: '',
 					dateEnd: '',
 				},
-				options: ['正式', '试用'],
+				searchData: {
+					page: 1,
+					page_size: 15,
+				},
+				// 翻页的数组
+				pageSizes: [15,30,50,100],
 				tableData: [],
-				page: 1,
 				currentPage: 1,
-				pageSize: 10,
 				total: 0,
 				loading: false,
-				title: '新增项目角色',
-				centerDialogVisible: false,
-				form: {
-					role_name: '',
-					role_describe: '',
-					installed: '',
+				// 添加人员|调整部门数据
+				addUser:{
+					depart_id: "",
+					user_ids: []
 				},
-				rules: {
-					role_name: [{
-						required: true,
-						message: '请输入项目角色名称',
-						trigger: 'blur'
-					}],
-					role_describe: [{
-						required: true,
-						message: '请输入职责描述',
-						trigger: 'blur'
-					}],
-					installed: [{
-						required: true,
-						message: '请选择是否启用',
-						trigger: 'change'
-					}],
-				},
+				personEditDalog: false,
+				// throughTree是否多选
+				throuthMultiple: true,
+				// 更换部门
+				personLists: [],
+				// throughTree选中的
+				savePersonData: [],
+				// 弹框标题
+				throughTitle: ""
 			}
 		},
 		created() {
@@ -208,30 +125,10 @@
 			refreshApi(){// 获取数据
 				var that = this;
 				this.loading = true;
-				let url = '/api/memCompany/list';
-				let obj = {
-					company_id: that.loginData.default_company.id,
-					uid: that.loginData.user_info.id,
-					page: this.page,
-					page_size: this.pageSize,
-				}
-				if(this.itemData.app_id === 'rygl'){
-					obj.username = '';
-					obj.depart_name = '';
-				}else if(this.itemData.app_id === 'jsgl'){
-					obj.role_name = '';
-					url = '/api/roleCompany/list';
-				}else if(this.itemData.app_id === 'xmgl'){
-					obj.role_name = '';
-					url = '/api/projectRole/list';
-				}
-				this.formInline.username && (obj.username = this.formInline.username);
-				this.formInline.depart_name && (obj.depart_name = this.formInline.depart_name);
-				this.formInline.role_name && (obj.role_name = this.formInline.role_name);
-				this.$axios.post(url, obj).then(res => {
-					// console.log( res.data.data);
+				let url = '/custom/user/index';
+				this.$axios.get(url, {params: this.searchData}).then(res => {
 					if(res.data.code === 1){
-						that.$set(that, 'pageSize', res.data.data.page_size);
+						that.$set(that.searchData, 'page_size', res.data.data.page_size);
 						that.$set(that, 'total', res.data.data.total);
 						that.$set(that, 'tableData', res.data.data.list);
 					}else{
@@ -262,97 +159,106 @@
 				});
 			},
 			onScreen() {// 确认筛选
-				this.page = 1;
+				this.searchData.page = 1;
 				this.refreshApi();
 			},
 			on_select(val) { // 让表格点击行可以选中
 				this.$refs.multipleTable.toggleRowSelection(val);
 			},
 			handleCurrentChange(val) {// 切换页
-				this.page = val;
+				this.searchData.page = val;
 				this.refreshApi();
 				// console.log(`当前页: ${val}`);
 			},
-			roleProjectAdd(){// 点击新增
-				let obj = {
-					role_name: '',
-					role_describe: '',
-					installed: '',
-				};
-				this.$set(this, 'title', '新增项目角色');
-				this.$set(this, 'centerDialogVisible', true);
-				this.$set(this, 'form', obj);
-			},
-			createAn(formName){// 确认创建打印模板
-				let that = this;
-				this.$refs[formName].validate((valid) => {
-					if (valid) {
-						that.loading = true;
-						let objPost = {
-							"company_id": that.loginData.default_company.id,//打印模板id
-							"role_name": this.form.role_name,
-							"role_describe": this.form.role_describe,
-							"installed": this.form.installed,
-							"uid": that.loginData.user_info.id
-						}
-						if (this.form.id) {
-							objPost.id = this.form.id;
-						}
-						this.$axios.post('/api/projectRole/save', objPost).then(res => {
-							if(res.data.code === 1){
-								that.$message({
-									message: res.data.msg,
-									type: 'success'
-								});
-								this.$set(this, 'centerDialogVisible', false);
-								that.refreshApi();
-							}else{
-								that.overdueOperation(res.data.code, res.data.msg);
-							}
-						}).catch(err => {
-							that.$message.error(err);
-							that.loading = false;
-						});
-					} else {
-						// console.log('error submit!!');
-						return false;
-					}
-				});
-			},
-			roleProjectEdit(){// 点击编辑
-				let selectData = this.getSelected();
-				let that = this;
-				if (selectData.length > 1) {
-					that.$message.error('只能选择一项进行编辑！');
-					return
-				} else if (selectData.length == 0) {
-					that.$message.error('请选择要编辑的选项！');
+			// 部门人员添加确认|调整部门的确认
+			addPersonFn(){
+				let that = this,
+					url = "";
+				console.log(that.savePersonData)
+				console.log(that.checkData)
+				console.log(that.savePersonData)
+				// 部门调整
+				if(!that.savePersonData[0]){
+					// 没选中
+					that.$message.error('请选择数据');
 					return
 				}
-				that.loading = true;
-				let postObj = {
-					uid: that.loginData.user_info.id,
-					id: selectData[0].id
+				if(that.savePersonData[0].role_name){
+					// 更换角色
+					that.addUser.depart_id = ""
+					url = "/custom/role/add_user"
+					that.addUser.role_id = that.savePersonData[0].id
+				}else{
+					// 调整部门
+					that.addUser.role_id = ""
+					url = "/custom/depart/add_user"
+					that.addUser.depart_id = that.savePersonData[0].id
 				}
-				this.$axios.post('/api/projectRole/edit', postObj).then(res => {
+				// 选中的数据
+				that.postFn({
+					url: url,
+					option: that.addUser
+				},(res)=>{
+					that.personEditDalog = false
+					that.$message.success(res.msg);
+					that.refreshApi()
+				})
+			},
+			// 部门调整(type: 1) | 角色调整 (type: 2)
+			depRoleEditFn(type){
+				let that = this,
+					selectData = that.getSelected();
+				if(selectData.length === 0){
+					that.$message.error('请至少勾选一项');
+					return
+				}
+				console.log(selectData)
+				// depart_id
+				// user_ids
+
+				this.loading = true;
+				let url = '/custom/depart/lists';
+				if(type === 2){
+					url = '/custom/user/select_role'
+				}
+				this.$axios.get(url).then(res => {
 					if(res.data.code === 1){
-						let obj = {
-							role_name: res.data.data.role_name,
-							role_describe: res.data.data.role_describe,
-							installed: res.data.data.installed + '',
-							id: res.data.data.id,
-						};
-						that.$set(that, 'form', obj);
-						that.$set(that, 'title', '编辑项目角色');
-						that.$set(that, 'centerDialogVisible', true);
+						that.addUser.user_ids = []
+						selectData.map((v)=>{
+							that.addUser.user_ids.push(v.id)
+						})
+						that.throughTitle = type === 1 ? "调整部门" : "更换角色"
+						that.personEditDalog = true;
+						that.throuthMultiple = false;
+						that.$nextTick(()=>{
+							that.$set(that,"savePersonData",[])
+							that.$set(that,"personLists",res.data.data)
+						})
 					}else{
 						that.overdueOperation(res.data.code, res.data.msg);
 					}
-					that.loading = false;
+					this.loading = false;
 				}).catch(err => {
-					that.$message.error(err);
-					that.loading = false;
+					// console.log(err);
+					this.loading = false;
+					this.$message({
+						message: err,
+						type: 'error'
+					});
 				});
+
+
+
+
+
+
+
+
+
+
+
+
+
 			},
 			getSelected() {// 获取表格选中数据
 				return this.$refs.multipleTable.selection;
@@ -368,31 +274,49 @@
 				selectData.map((item) => {
 					arrId.push(item.id);
 				});
-				this.$confirm('确认删除选中的项目角色？').then(() => {
-					that.loading = true;
-					this.$axios.post('/api/projectRole/del', {
-						'uid': that.loginData.user_info.id,
-						'id': arrId
-					}).then(res => {
-						if(res.data.code === 1){
-							that.$message({
-								message: res.data.msg,
-								type: 'success'
-							});
-							that.refreshApi();
-						}else{
-							that.overdueOperation(res.data.code, res.data.msg);
+				this.$confirm('确认删除<span class="red">【选中的人员】</span>吗？','提示',{
+					confirmButtonText: '确定',
+					cancelButtonText: '取消',
+					dangerouslyUseHTMLString: true,
+					type: 'warning'
+				}).then(() => {
+					that.postFn({
+						url: "/custom/user/del",
+						option: {
+							user_id: arrId
 						}
-					}).catch(err => {
-						that.$message.error(err);
-						that.loading = false;
-					});
+					},(res)=>{
+						that.$message({
+							message: res.msg,
+							type: 'success'
+						});
+						that.refreshApi();
+					})
 				}).catch(() => {});
 			},
 			sizeChange(val){
-				this.$set(this, 'pageSize', val);
+				this.$set(this.searchData, 'page_size', val);
 				this.refreshApi();
-			}
+			},
+			// post请求
+			postFn(Data,success,error){
+				this.loading = true
+				this.$axios.post(Data.url,Data.option).then(res => {
+					if(res.data.code === 1){
+						success(res.data)
+					}else{
+						this.overdueOperation(res.data.code, res.data.msg);
+					}
+					this.loading = false;
+				}).catch(err => {
+					this.loading = false;
+					this.$message({
+						message: err,
+						type: 'error'
+					});
+					error()
+				})
+			},
 		}
 	}
 </script>
@@ -403,7 +327,7 @@
 		.table-box {
 			height: calc(100% - 104px);
 			&.table-box-btn{
-				height: calc(100% - 164px);
+				height: calc(100% - 154px);
 				margin-top: 20px;
 			}
 		}

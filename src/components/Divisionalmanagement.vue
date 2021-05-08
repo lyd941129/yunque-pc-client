@@ -582,9 +582,10 @@
 							return
 						}
 						// 数据还原
-						that.$confirm('确定要删除该部门下的【选中人员】吗？','提示',{
+						that.$confirm('确定要删除<span class="red">【选中的部门人员】</span>吗？','提示',{
 							confirmButtonText: '确定',
 							cancelButtonText: '取消',
+							dangerouslyUseHTMLString: true,
 							type: 'warning'
 						}).then(() => {
 							let arr = []
