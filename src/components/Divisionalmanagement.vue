@@ -38,7 +38,6 @@
 						<el-row>
 							<el-button :disabled="dragShow" round @click="operatePartFn(1)">添加子部门</el-button>
 							<el-button :disabled="dragShow" v-if="dep.length" round @click="operatePartFn(2)">调整排序</el-button>
-							<!-- <el-button round @click="operatePartFn(3)">编辑</el-button> -->
 						</el-row>
 					</div>
 					<div class="list-contant">
@@ -74,9 +73,9 @@
 					</div>
 					<div class="list-btn">
 						<el-row>
-							<el-button round type="primary">添加成员</el-button>
-							<el-button round>调整部门</el-button>
-							<el-button round type="danger">删除</el-button>
+							<el-button @click="operatePersonFn(1)" round type="primary">添加成员</el-button>
+							<el-button @click="operatePersonFn(2)" round>调整部门</el-button>
+							<el-button @click="operatePersonFn(3)" round type="danger">删除</el-button>
 						</el-row>
 					</div>
 					<div class="list-contant">
@@ -92,14 +91,13 @@
 				</div>
 			</div>
 		</div>
-		<!-- 弹框 -->
+		<!-- 部门新增/编辑弹框 -->
 		<el-dialog :title="dalogTitle" :visible.sync="centerDialogVisible" center width='530px'>
 			<el-form :model="depEdit" :rules="rules.depEdit" ref="form" label-width="135px">
 				<el-form-item label="部门名称" prop="depart_name">
 					<el-input v-model="depEdit.depart_name" autocomplete="off" clearable></el-input>
 				</el-form-item>
 				<el-form-item label="上级部门" prop="dict_sort">
-					<!-- <el-input v-model="depEdit.dict_sort" autocomplete="off"></el-input> -->
 					<el-cascader class="w-100" 
 					placeholder="默认空则是最顶级目录" 
 					clearable 
@@ -113,18 +111,31 @@
 				<el-button type="primary" class="btn-dialog" @click="sureFn('form')">确 定</el-button>
 			</span>
 		</el-dialog>
+		<!-- 添加成员弹框 -->
+		<el-dialog :title="throughTitle" :visible.sync="personEditDalog" width='530px'>
+			<!-- <span slot="footer" class="dialog-footer">
+				<el-button type="primary" class="btn-dialog" @click="sureFn('form')">确 定</el-button>
+			</span> -->
+			<ThroughTree :isMultiple="throuthMultiple" :treeData="personLists" :treeSaveData.sync="savePersonData"></ThroughTree>
+			<span slot="footer" class="dialog-footer">
+				<el-button type="primary" @click="addPersonFn">确 认</el-button>
+				<el-button @click="personEditDalog = false">取 消</el-button>
+			</span>
+		</el-dialog>
 	</div>
 </template>
 
 <script>
 	import draggable from 'vuedraggable'
+	import ThroughTree from './ThroughTree.vue';
 	export default {
 		props:{
 			editableTabs: {},
 			editableTabsValue: {},
 		},
 		components: {
-			draggable
+			draggable,
+			ThroughTree
 		},
 		data() {
 			return {
@@ -150,6 +161,14 @@
 					depart_name: "",
 					showDep: []
 				},
+				// 部门添加成员
+				personEdit: {
+					depart_id: "",
+					user_ids: []
+				},
+				// 选择人员列表
+				personLists: [],
+				savePersonData: [],
 				// 验证
 				rules: {
 					// 部门编辑的验证
@@ -163,8 +182,12 @@
 				},
 				// 弹框显示
 				centerDialogVisible: false,
+				personEditDalog: false,
 				// 弹框标题
 				dalogTitle: "",
+				throughTitle: "",
+				// throughTree是否多选
+				throuthMultiple: true,
 				// 上级部门选择的配置
 				depConfig: {
 					label: "depart_name",
@@ -175,7 +198,12 @@
 				// 部门编辑或修改
 				isDepAdd: false,
 				// 是否显示拖动按钮
-				dragShow: false
+				dragShow: false,
+				// 添加人员|调整部门数据
+				addUser:{
+					depart_id: "",
+					user_ids: []
+				}
 			}
 		},
 		created() {
@@ -243,6 +271,7 @@
 							that.childPerson(that.checkData)
 							// 当前选中的目录
 							that.$refs.tree.setCurrentKey(that.checkData.id)
+							// that.$set(that,"savePersonData",JSON.parse(JSON.stringify([that.checkData])))
 						})
 
 						// that.operateDom();
@@ -334,6 +363,7 @@
 						that.checkData = val
 						that.childDep(val);
 						that.childPerson(val);
+						// that.$set(that,"savePersonData",JSON.parse(JSON.stringify([that.checkData])))
 					}).catch(err => {
 						that.$refs.tree.setCurrentKey(that.checkData.id)
 					});
@@ -341,6 +371,7 @@
 					that.checkData = val
 					that.childDep(val);
 					that.childPerson(val);
+					// that.$set(that,"savePersonData",JSON.parse(JSON.stringify([that.checkData])))
 				}
 			},
 			// 设置当前部门名称和上级部门
@@ -348,6 +379,7 @@
 				let node = data || this.$refs.tree.getCurrentNode(),
 					showDep = node.label.split(",");
 				this.centerDialogVisible = true;
+				this.dalogTitle = node.dalogTitle || "编辑部门"
 				this.depEdit.depart_name = node.depart_name || ""
 				this.depEdit.depart_id = node.id || ""
 				this.depEdit.parent_id = node.parent_id
@@ -366,7 +398,7 @@
 				this.loading = true
 				this.$axios.post(Data.url,Data.option).then(res => {
 					if(res.data.code === 1){
-						success()
+						success(res.data)
 					}else{
 						this.overdueOperation(res.data.code, res.data.msg);
 					}
@@ -380,7 +412,7 @@
 					error()
 				})
 			},
-			// 模态框确认
+			// 部门模态框确认
 			sureFn(formName){
 				let that = this;
 				that.$refs[formName].validate((valid)=>{
@@ -410,6 +442,7 @@
 				this.childDep(data)
 				this.childPerson(data)
 				this.$refs.tree.setCurrentKey(this.checkData.id)
+				// this.$set(this,"savePersonData",JSON.parse(JSON.stringify([that.checkData])))
 			},
 			/* 下级部门列表操作按钮
 			type: 1 添加子部门；
@@ -423,7 +456,8 @@
 					case 1:
 						that.setPartFn({
 							label: that.checkData.label,
-							parent_id: that.checkData.id
+							parent_id: that.checkData.id,
+							dalogTitle: "添加子部门"
 						})
 						break;
 					case 2:
@@ -454,6 +488,135 @@
 						}).catch(err => {
 							
 						});
+						break;
+					default:
+						break;
+				}
+			},
+			// 部门人员添加确认|调整部门的确认
+			addPersonFn(){
+				let that = this;
+				console.log(this.savePersonData)
+				console.log(this.checkData)
+				console.log(that.savePersonData)
+				
+				if(that.savePersonData[0].depart_name){
+					// 部门调整
+					that.addUser.depart_id = that.savePersonData[0].id
+				}else{
+					// 添加成员
+					that.addUser.depart_id = that.checkData.id
+					that.savePersonData.map((v)=>{
+						that.addUser.user_ids.push(v.id)
+					})
+				}
+				// 选中的数据
+				that.postFn({
+					url: "/custom/depart/add_user",
+					option: that.addUser
+				},(res)=>{
+					that.personEditDalog = false
+					that.$message.success(res.msg);
+					that.childPerson(that.checkData);
+				})
+			},
+			/* 部门人员操作按钮
+			type: 1 添加成员；
+				  2 调整部门
+				  3 删除
+			 */
+			operatePersonFn(type){
+				let that = this,
+					selectData = that.$refs.multipleTable.selection;;
+				switch (type) {
+					case 1:
+						that.throughTitle = "添加成员"
+						that.loading = true;
+						that.throuthMultiple = true;
+						let url = "/custom/depart/select_user",
+							obj = {
+								params:{
+									type: 2
+								}
+							};
+						that.$axios.get(url,obj).then(res => {
+							console.log(res)
+							if(res.data.code === 1){
+								that.personEditDalog = true;
+								that.savePersonData = [];
+								that.personLists = res.data.data;
+							}else{
+								that.overdueOperation(res.data.code, res.data.msg);
+							}
+							that.loading = false;
+						}).catch(err => {
+							that.loading = false;
+							that.$message({
+								message: err,
+								type: 'error'
+							});
+						});
+
+						break;
+					case 2:
+						if(selectData.length === 0){
+							that.$message.error('请至少勾选一项');
+							return
+						}
+						that.addUser.user_ids = []
+						selectData.map((v)=>{
+							that.addUser.user_ids.push(v.id)
+						})
+						that.throughTitle = "调整部门"
+						that.personEditDalog = true;
+						that.throuthMultiple = false;
+						that.$nextTick(()=>{
+							that.$set(that,"savePersonData",[that.checkData])
+							that.$set(that,"personLists",that.treeData)
+						})
+
+						break;
+					case 3:
+						if(selectData.length === 0){
+							that.$message.error('请至少勾选一项');
+							return
+						}
+						// 数据还原
+						that.$confirm('确定要删除该部门下的【选中人员】吗？','提示',{
+							confirmButtonText: '确定',
+							cancelButtonText: '取消',
+							type: 'warning'
+						}).then(() => {
+							let arr = []
+							selectData.map((v)=>{
+								arr.push(v.id)
+							})
+							that.postFn({
+								url: "/custom/depart/remove_user",
+								option: {
+									depart_id: that.checkData.id,
+									user_ids: arr
+								}
+							},(res)=>{
+								// 删除成功
+								that.$message.success(res.msg);
+								that.childPerson(that.checkData);
+							})
+						}).catch(err => {
+							
+						});
+
+
+
+
+
+
+
+
+
+
+
+
 						break;
 					default:
 						break;
