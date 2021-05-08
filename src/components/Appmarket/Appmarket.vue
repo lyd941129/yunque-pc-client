@@ -5,17 +5,17 @@
 		<el-row class="app-market-left">
 			<el-col :span="12">
 				<el-menu :default-active="applicationModuletion" class="el-menu-vertical-demo" @select="handlApplicationModuletion">
-					<el-menu-item v-for="(item, index) in applicationModule" :index="item.id" :key="index">
-						{{item.name}}
+					<el-menu-item v-for="(item, index) in applicationModule" :index="item.dict_value" :key="index">
+						{{item.dict_label}}
 					</el-menu-item>
 				</el-menu>
 			</el-col>
 		</el-row>
 		<!-- 右边内容 -->
-		<div class="app-market-right">
+		<div class="app-market-right" v-if="contentRight">
 			<div class="app-market-right-content">
 				<div class="title">
-					<div class="appname">{{contentRight.name}}</div>
+					<div class="appname">{{contentRight.dict_label}}</div>
 					<div class="appdate" v-if="renew">到期日期：2021-12-30</div>
 				</div>
 				<div class="content">
@@ -27,12 +27,12 @@
 					</div>
 				</div>
 				<div class="app-list">
-					<div class="app-list-item" v-for="(item, index) in contentRight.app" :key="index">
+					<div class="app-list-item" v-for="(item, index) in contentRight.app" :key="index" @click="adAppFun(contentRight ,item)">
 						<img class="icon-img" v-if="item.app_style" :src="imgHttp+'/'+item.app_style">
 						<i v-else class="icon" :class="item.icon_url ? item.icon_url : 'icon-project'"></i>
 						<div class="app-list-item-text">
 							<span class="apptitle">{{item.app_name}}</span>
-							<span class="des">说明文字内容，说明文字样式内容。说明文字内容，说明文字样式内容。</span>
+							<span class="des">{{item.describe}}</span>
 						</div>
 						<div class="installation">安装应用</div>
 					</div>
@@ -45,7 +45,7 @@
 			<!-- 说明 -->
 			<div class="dex-box">
 				<span class="explain">说明：</span>
-				<div class="content-text">{{contentRight.explain}}</div>
+				<div class="content-text">{{contentRight ? contentRight.explain : ''}}</div>
 			</div>
 			<!-- 时效 -->
 			<div class="aging-box">
@@ -79,185 +79,13 @@
 
 <script>
 	export default {
+		props:{
+			applicationModule: {},
+			adAppFun: {},
+			information: {},
+		},
 		data() {
 			return {
-				applicationModule: [
-					{
-						name: '合同管理',
-						id: '1',
-						explain: '模块文字说明内容文字，模块文字说明内容文字。模块文字说明内容文字，模块文字说明内容文字。模块文字说明内容文字，模块文字说明内容文字。模块文字说明内容文字，模块文字说明内容文字。模块文字说明内容文字，模块文字说明内容文字。',
-						app: [
-							{
-								app_group: 1,
-								app_id: "212216783368994817",
-								app_name: "项目部组建",
-								app_style: "",
-								ca_id: "",
-								icon_url: "icon-project",
-								installed: 0,
-							},
-							{
-								app_group: 4,
-								app_id: "215527427707838465",
-								app_name: "成本预算",
-								app_style: "uploads/ico/20210315/T20210315085437_84921.png",
-								ca_id: "",
-								icon_url: "icon-project",
-								installed: 0,
-							},
-							{
-								app_group: 2,
-								app_id: "223008202799812609",
-								app_name: "付款申请",
-								app_style: "",
-								ca_id: "",
-								icon_url: "icon-menu",
-								installed: 0,
-							},
-							{
-								app_group: 3,
-								app_id: "223009170144727040",
-								app_name: "印章申请",
-								app_style: "",
-								ca_id: "",
-								icon_url: "icon-card",
-								installed: 0,
-							},
-							{
-								app_group: 5,
-								app_id: "223009572059713536",
-								app_name: "班组管理",
-								app_style: "uploads/ico/20210315/T20210315085556_84921.png",
-								ca_id: "",
-								icon_url: "icon-project",
-								installed: 0,
-							},
-							{
-								app_group: 3,
-								app_id: "223011100816412672",
-								app_name: "安全管理",
-								app_style: "",
-								ca_id: "",
-								icon_url: "icon-q",
-								installed: 0,
-							},
-							{
-								app_group: 3,
-								app_id: "223012629560528896",
-								app_name: "维修管理",
-								app_style: "",
-								ca_id: "",
-								icon_url: "icon-people",
-								installed: 0,
-							},
-							{
-								app_group: 5,
-								app_id: "223017059072712705",
-								app_name: "供应商管理",
-								app_style: "uploads/ico/20210315/T20210315085609_27509.png",
-								ca_id: "",
-								icon_url: "icon-project",
-								installed: 0,
-							},
-							{
-								app_group: 4,
-								app_id: "223017804257927168",
-								app_name: "劳务付款",
-								app_style: "uploads/ico/20210315/T20210315085527_60003.png",
-								ca_id: "",
-								icon_url: "icon-project",
-								installed: 0,
-							},
-							{
-								app_group: 5,
-								app_id: "223020839268888577",
-								app_name: "劳务公司",
-								app_style: "uploads/ico/20210315/T20210315085929_76255.png",
-								ca_id: "",
-								icon_url: "icon-project",
-								installed: 0,
-							},
-							{
-								app_group: 3,
-								app_id: "223021383823765504",
-								app_name: "巡检管理",
-								app_style: "uploads/ico/20210315/T20210315090216_57531.png",
-								ca_id: "",
-								icon_url: "icon-project",
-								installed: 0,
-							},
-							{
-								app_group: 4,
-								app_id: "223026298436571137",
-								app_name: "材料付款",
-								app_style: "uploads/ico/20210315/T20210315085546_73462.png",
-								ca_id: "",
-								icon_url: "icon-project",
-								installed: 0,
-							},
-							{
-								app_group: 2,
-								app_id: "223081254367670273",
-								app_name: "一般报销",
-								app_style: "uploads/ico/20210315/T20210315085410_14305.png",
-								ca_id: "",
-								icon_url: "icon-project",
-								installed: 0,
-							},
-							{
-								app_group: 6,
-								app_id: "235802851811598337",
-								app_name: "项目立项",
-								app_style: "",
-								ca_id: "",
-								icon_url: "icon-tower",
-								installed: 0,
-							},
-							{
-								app_group: 6,
-								app_id: "235802851811598337",
-								app_name: "项目立项",
-								app_style: "",
-								ca_id: "",
-								icon_url: "icon-tower",
-								installed: 0,
-							},
-							{
-								app_group: 6,
-								app_id: "238342055192113153",
-								app_name: "合同登记",
-								app_style: "",
-								ca_id: "",
-								icon_url: "icon-rw",
-								installed: 0,
-							},
-							{
-								app_group: 3,
-								app_id: "244119239865892865",
-								app_name: "资料移交",
-								app_style: "",
-								ca_id: "",
-								icon_url: "icon-notice",
-								installed: 0,
-							}
-						]
-					}, {
-						name: '开工准备',
-						id: '2',
-					}, {
-						name: '工程现场',
-						id: '3',
-					}, {
-						name: '成本管理',
-						id: '4',
-					}, {
-						name: '财务管理',
-						id: '5',
-					}, {
-						name: '往来公司',
-						id: '6',
-					}
-				],
 				applicationModuletion: '1',
 				contentRight: '',
 				renew: true,
@@ -266,12 +94,16 @@
 				agingInput: '',
 			}
 		},
+		created() {// 进入应用市场默认第一个数据选中
+			this.contentRight = this.applicationModule[0];
+			this.applicationModuletion = this.applicationModule[0].dict_value;
+		},
 		methods: {
-			handlApplicationModuletion(key) {
-				let obj = this.applicationModule.filter((e) => { return e.id == key; });
+			handlApplicationModuletion(key) {// 监听左边数据变化修改右边数据
+				let obj = this.applicationModule.filter((e) => { return e.dict_value == key; });
 				this.contentRight = obj[0];
 			},
-			createAn(formName){// 确认创建打印模板
+			createAn(formName){// 立即付款
 				let that = this;
 				this.$refs[formName].validate((valid) => {
 					if (valid) {
@@ -282,7 +114,7 @@
 					}
 				});
 			},
-			buyFun(){
+			buyFun(){// 点击购买或者续费
 				this.centerDialogVisible = true;
 			}
 		}
@@ -406,7 +238,7 @@
 						i{
 							flex-shrink: 0;
 							transform: scale(1.5);
-							margin-top: 12px
+							margin-top: 2px
 						}
 						.installation{
 							width: 62px;
@@ -420,6 +252,11 @@
 							right: 20px;
 							text-align: center;
 							font-size: 12px;
+							&:hover{
+								transition: all .3s;
+								opacity: 0.7;
+								cursor: pointer;
+							}
 						}
 						.app-list-item-text{
 							display: flex;

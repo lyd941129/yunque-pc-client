@@ -39,15 +39,15 @@
 		</el-header>
 		<el-main>
 			<!-- 企业管理 -->
-			<el-tabs v-show="activeIndex === 'enterprise'" id="main-tabs" v-model="editableTabsValue" type="card" closable @tab-remove="removeTab">
+			<el-tabs v-if="activeIndex === 'enterprise'" id="main-tabs" v-model="editableTabsValue" type="card" closable @tab-remove="removeTab">
 				<el-tab-pane v-for="(item, index) in editableTabs" :key="item.name" :label="item.title" :name="item.name">
 					<component :ref="'applicat'+ item.name" :is="item.type" :key="item.type" :adhibitionFun="adhibitionFun" :itemData="item" :editableTabs.sync="editableTabs" :editableTabsValue.sync="editableTabsValue"></component>
 				</el-tab-pane>
 			</el-tabs>
 			<!-- 应用市场 -->
-			<el-tabs v-show="activeIndex === 'market'" id="main-tabs" v-model="appTabsValue" type="card" closable>
+			<el-tabs v-if="activeIndex === 'market'" id="main-tabs" v-model="appTabsValue" type="card" closable @tab-remove="removeAppTab">
 				<el-tab-pane v-for="(item, index) in appTabs" :key="item.name" :label="item.title" :name="item.name">
-					<component :ref="'app'+ item.name" :is="item.type" :key="item.type"></component>
+					<component :ref="'app'+ item.name" :is="item.type" :key="item.name" :applicationModule="applicationModule" :adAppFun="adAppFun" :information='item.information'></component>
 				</el-tab-pane>
 			</el-tabs>
 		</el-main>
@@ -65,6 +65,7 @@
 	import OrderPay from '../components/OrderRenewal/OrderPay.vue';
 	import BillDetail from '../components/OrderRenewal/BillDetail.vue';
 	import Appmarket from '../components/Appmarket/Appmarket.vue';
+	import AppDetail from '../components/Appmarket/AppDetail.vue';
 	
 	import axios from 'axios';
 	export default {
@@ -79,6 +80,7 @@
 			OrderPay,
 			BillDetail,
 			Appmarket,
+			AppDetail,
 		},
 		data() {
 			return {
@@ -94,14 +96,16 @@
 				appTabs: [{
 						title: '应用中心',
 						name: '1',
-						type: 'Appmarket'
+						type: 'Appmarket',
+						information: '',
 					},
 				],
 				flowConditionArr: [],
 				adhibitionArrData: [],
 				loading: false,
 				enterpriseList: [],
-				addNum: '2'
+				addNum: '2',
+				applicationModule: [],
 			}
 		},
 		computed:{
@@ -216,9 +220,34 @@
 				that.addNum = ++that.addNum;
 			},
 			handleSelect(key, keyPath) {// 顶部分栏切换事件
+				let that = this;
 				// console.log(key, keyPath);
-				this.activeIndex = key;
-				// console.log(this.activeIndex);
+				if(key === 'market'){// 进入应用市场
+					that.loading = true;
+					that.applicationModule = [];
+					that.$axios.get('/api/market/list').then(data => {
+						if(data.data.code === 1){
+							data.data.data.app_group.map((group) => {
+								group.app = [];
+								data.data.data.app.map((app) => {
+									if(app.app_group == group.dict_value){
+										group.app.push(app);
+									}
+								});
+								that.applicationModule.push(group);
+							});
+							that.activeIndex = key;
+						}else{
+							that.overdueOperation(data.data.code, data.data.msg);
+						}
+						that.loading = false;
+					}).catch(msg => {
+						that.$message.error(msg);
+						that.loading = false;
+					});
+				}else{
+					that.activeIndex = key;
+				}
 			},
 			handlAdhibition(key) {
 				this.adhibition = key;
@@ -313,8 +342,45 @@
 				that.editableTabs = [that.editableTabs[0]];
 				that.editableTabsValue = '1';
 				that.$refs.applicat1[0].getData();
-			}
+			},
 			// 应用市场
+			adAppFun(grop, app){// 应用市场新增页签
+				// console.log(grop, app);
+				let that = this;
+				let obj = that.appTabs.filter(function(s){
+					return app.id == s.name;
+				});
+				if(obj.length > 0){
+					that.appTabsValue = obj[0].name + '';
+					return
+				}
+				that.appTabs.push({
+					title: app.app_name,
+					name: app.id,
+					type: 'AppDetail',
+					information: app,
+				});
+				that.appTabsValue = app.id + '';
+			},
+			removeAppTab(targetName) {
+				let tabs = this.appTabs;
+				let activeName = this.appTabsValue;
+				if(targetName == 1){
+					return
+				}
+				if (activeName === targetName) {
+					tabs.forEach((tab, index) => {
+						if (tab.name === targetName) {
+							let nextTab = tabs[index + 1] || tabs[index - 1];
+							if (nextTab) {
+								activeName = nextTab.name;
+							}
+						}
+					});
+				}
+				this.appTabsValue = activeName;
+				this.appTabs = tabs.filter(tab => tab.name !== targetName);
+			},
 		},
 	}
 </script>

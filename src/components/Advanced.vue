@@ -83,10 +83,39 @@
 			onSubmit() {
 				// console.log('submit!');
 			},
-			openFigure(type){
+			openFigure(type){// 打开人员选择弹框
 				var that = this;
+				that.treeSaveData = [];
+				that.treeSaveDataDerive = [];
+				if(type === 'derive'){
+					that.advData.export_print && that.advData.export_print.length && that.advData.export_print.map((obj_a) => {
+						for(let key in obj_a){
+							this.treeSaveDataDerive.push({
+								id: key,
+								username: obj_a[key]
+							});
+						}
+					});
+				}else{
+					that.advData.visible_depart && that.advData.visible_depart.length && that.advData.visible_depart.map((obj_a) => {
+						for(let key in obj_a){
+							this.treeSaveData.push({
+								id: key,
+								username: obj_a[key]
+							});
+						}
+					});
+					that.advData.visible_member && that.advData.visible_member.length && that.advData.visible_member.map((obj_a) => {
+						for(let key in obj_a){
+							this.treeSaveData.push({
+								id: key,
+								username: obj_a[key]
+							});
+						}
+					});
+				}
 				type === 'derive' ? (that.dialogTableVisibleDerive = true) : (that.dialogTableVisible = true);
-				this.$axios.post('/api/memCompany/getMem', {
+				that.$axios.post('/api/memCompany/getMem', {
 					'company_id': that.loginData.default_company.id
 				}).then(res => {
 					if(res.data.code === 1){
@@ -99,7 +128,7 @@
 					// console.log(err)
 				})
 			},
-			visiblePersonnel(){
+			visiblePersonnel(){// 可见范围人员选择弹框确定事件
 				var user = [];
 				var dep = [];
 				this.treeSaveData.length && this.treeSaveData.map((item) => {
@@ -130,7 +159,7 @@
 				this.$emit('update:advData', this.advData);
 				this.dialogTableVisible = false;
 			},
-			visiblePersonnelDerive(){
+			visiblePersonnelDerive(){// 导出权限人员选择弹框确定事件
 				var user = [];
 				this.treeSaveDataDerive.length && this.treeSaveDataDerive.map((item) => {
 					let obj = {};
@@ -193,32 +222,6 @@
 				},
 				deep: true
 			},
-			// 'advData.visible_member':{
-			// 	handler (val) {
-			// 		if(val){
-			// 			let that = this;
-			// 			val.map((item) => {
-			// 				for(let key in item){
-			// 					that.show2.push(item[key]);
-			// 				}
-			// 			});
-			// 		}
-			// 	},
-			// 	deep: true
-			// },
-			// 'advData.visible_depart':{
-			// 	handler (val) {
-			// 		if(val){
-			// 			let that = this;
-			// 			val.map((item) => {
-			// 				for(let key in item){
-			// 					that.show2.push(item[key]);
-			// 				}
-			// 			});
-			// 		}
-			// 	},
-			// 	deep: true
-			// },
 			advData: {
 				handler (val) {
 					val.start_person ? (this.start_person = true) : (this.start_person = false);
