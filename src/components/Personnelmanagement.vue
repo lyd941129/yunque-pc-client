@@ -2,17 +2,37 @@
 <template>
 	<div class="personnelmanagement" v-loading="loading">
 		<el-form :inline="true" :model="formInline" class="demo-form-inline">
-			<el-form-item label="角色" v-if="itemData.app_id === 'jsgl'">
-				<el-input @keyup.enter.native="onScreen" v-model="formInline.role_name" placeholder="请输入角色名称" clearable></el-input>
+			<el-form-item label="角色 : ">
+				<el-select @change="onScreen" v-model="formInline.role_name" filterable placeholder="请选择" clearable>
+					<el-option
+					v-for="item in roleData"
+					:key="item.id"
+					:label="item.role_name"
+					:value="item.id"
+					></el-option>
+				</el-select>
+				<!-- <el-input @keyup.enter.native="onScreen" v-model="formInline.role_name" placeholder="请输入角色名称" clearable></el-input> -->
 			</el-form-item>
-			<el-form-item label="人员名称" v-if="itemData.app_id === 'rygl'">
-				<el-input @keyup.enter.native="onScreen" v-model="formInline.username" placeholder="请输入人员名称" clearable></el-input>
-			</el-form-item>
-			<el-form-item label="部门名称" v-if="itemData.app_id === 'rygl'">
-				<el-input @keyup.enter.native="onScreen" v-model="formInline.depart_name" placeholder="请输入部门名称" clearable></el-input>
+			<el-form-item label="入职时间 : ">
+				<el-date-picker
+				:default-time="['00:00:00', '23:59:59']"
+				@change="onScreen"
+				v-model="formInline.time"
+				type="daterange"
+				align="right"
+				unlink-panels
+				range-separator="至"
+				start-placeholder="开始日期"
+				end-placeholder="结束日期">
+				</el-date-picker>
 			</el-form-item>
 			<el-form-item>
 				<el-button @click="onScreen">确认筛选</el-button>
+			</el-form-item>
+		</el-form>
+		<el-form :inline="true" :model="formInline" class="demo-form-inline">
+			<el-form-item label="关键字 : ">
+				<el-input class="keyword" prefix-icon="el-icon-search" clearable @keyup.enter.native="onScreen" v-model="formInline.username" placeholder="关键字搜索(人名)"></el-input>
 			</el-form-item>
 		</el-form>
 		<el-row class="btn-row">
@@ -26,20 +46,22 @@
 			:select-on-indeterminate='false' height="100%" @row-click="on_select">
 				<el-table-column type="selection" width="55"></el-table-column>
 				<el-table-column label="姓名" prop="username" align="center" width="80"></el-table-column>
-				<el-table-column label="生日" prop="birthday" align="center" width="160">
-				</el-table-column>
+				<el-table-column label="入职时间" prop="entry_time" align="center" width="160"></el-table-column>
+				<el-table-column label="所属部门" prop="depart_name" align="center"></el-table-column>
+				<el-table-column label="职位" prop="job_name" align="center"></el-table-column>
+				<el-table-column label="角色" prop="role_name" align="center"></el-table-column>
+				<el-table-column label="手机号" prop="phone" align="center"></el-table-column>
+<!-- 				<el-table-column label="生日" prop="birthday" align="center" width="160"></el-table-column>
 				<el-table-column label="性别" align="center" width="160">
 					<template slot-scope="scope">
 						<div>{{scope.row.gender ? '女' : '男'}}</div>
 					</template>
 				</el-table-column>
-				<el-table-column label="所属部门" prop="depart_name" align="center"></el-table-column>
-				<el-table-column label="手机号" prop="phone" align="center"></el-table-column>
 				<el-table-column label="是否启用" prop="installed" align="center">
 					<template slot-scope="scope">
 						<div>{{scope.row.installed ? '启用' : '不启用'}}</div>
 					</template>
-				</el-table-column>
+				</el-table-column> -->
 			</el-table>
 		</div>
 		<el-pagination @current-change="handleCurrentChange" :current-page="currentPage" @size-change="sizeChange"
@@ -71,12 +93,8 @@
 			return {
 				formInline: {
 					username: '',
-					depart_name: '',
 					role_name: '',
-					keyword: '',
-					status: '',
-					dateStart: '',
-					dateEnd: '',
+					time:""
 				},
 				searchData: {
 					page: 1,
@@ -101,11 +119,28 @@
 				// throughTree选中的
 				savePersonData: [],
 				// 弹框标题
-				throughTitle: ""
+				throughTitle: "",
+				// 角色数据
+				roleData:[]
 			}
 		},
 		created() {
 			this.refreshApi();
+			// 角色数据获取
+			let that = this;
+			this.$axios.get('/custom/user/select_role').then(res => {
+				if(res.data.code === 1){
+					that.roleData = res.data.data
+				}else{
+					that.overdueOperation(res.data.code, res.data.msg);
+				}
+			}).catch(err => {
+				// console.log(err);
+				this.$message({
+					message: err,
+					type: 'error'
+				});
+			});
 		},
 		computed: {
 			getLocalTime: function() {// 时间转化
@@ -125,8 +160,9 @@
 			refreshApi(){// 获取数据
 				var that = this;
 				this.loading = true;
-				let url = '/custom/user/index';
-				this.$axios.get(url, {params: this.searchData}).then(res => {
+				let url = '/custom/user/index',
+					option = Object.assign({},this.searchData,this.formInline);
+				this.$axios.get(url, {params: option}).then(res => {
 					if(res.data.code === 1){
 						that.$set(that.searchData, 'page_size', res.data.data.page_size);
 						that.$set(that, 'total', res.data.data.total);
@@ -216,11 +252,25 @@
 				// depart_id
 				// user_ids
 
-				this.loading = true;
 				let url = '/custom/depart/lists';
 				if(type === 2){
 					url = '/custom/user/select_role'
+					if(that.roleData.length){
+						that.addUser.user_ids = []
+						selectData.map((v)=>{
+							that.addUser.user_ids.push(v.id)
+						})
+						that.throughTitle = type === 1 ? "调整部门" : "更换角色"
+						that.personEditDalog = true;
+						that.throuthMultiple = false;
+						that.$nextTick(()=>{
+							that.$set(that,"savePersonData",[])
+							that.$set(that,"personLists",JSON.parse(JSON.stringify(that.roleData)))
+						})
+						return
+					}
 				}
+				this.loading = true;
 				this.$axios.get(url).then(res => {
 					if(res.data.code === 1){
 						that.addUser.user_ids = []
@@ -348,8 +398,12 @@
 	.personnelmanagement{
 		.demo-form-inline{
 			.el-input,
+			.el-select,
 			.el-date-editor.el-input{
-				width: 150px;
+				width: 140px;
+				&.keyword{
+					width: 236px;
+				}
 			}
 		}
 	}
