@@ -604,4 +604,9 @@
 
 		}
 	}
+	.btn-row{
+		.el-button{
+			padding: 7px 20px;
+		}
+	}
 </style>
