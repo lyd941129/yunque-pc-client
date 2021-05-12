@@ -11,7 +11,7 @@
 		<div class="container" @click="closeEntrance">
 			<div class="container-scale" :style="scaleFun">
 				<NodeElement v-if="refresh && refresh2" :clearNode="clearNode" :nodedata="flowData" :selectDataDispose="selectDataDispose" :addNodeEntrance="addNodeEntrance" :openProperty="openProperty" 
-				:addCondition="addCondition" :formConfigData="formConfigData"></NodeElement>
+				:addCondition="addCondition" :formConfigData="formConfigData" :appStyle='appStyle'></NodeElement>
 				<div class="end-node">
 					<div class="end-node-circle"></div>
 					<div class="end-node-text">流程结束</div>
@@ -23,7 +23,7 @@
 			<div v-show="show" class="ant-popover-inner-content" :style="addNodeEntranceFun">
 				<div class="add-node-popover">
 					<div class="add-node-popover-body">
-						<a class="add-node-popover-item approver" @click="addNode('approver')">
+						<a class="add-node-popover-item approver" @click="addNode('approver')" v-show="appStyle==2">
 							<div class="item-wrapper">
 								<i class="icon icon-add-approver"></i>
 							</div>
@@ -35,7 +35,7 @@
 							</div>
 							<span>抄送人</span>
 						</a>
-						<a class="add-node-popover-item route" @click="addNode('route')">
+						<a class="add-node-popover-item route" @click="addNode('route')" v-show="appStyle==2">
 							<div class="item-wrapper">
 								<i class="icon icon-add-route"></i>
 							</div>
@@ -49,7 +49,7 @@
 		<Property :property="property" :colseProperty="colseProperty" :qwer="qwer" :formData="selectData" :switchover="switchover" :jurisdiction="jurisdiction"
 		:nodeData.sync="nodeData" :conditionIndex="conditionIndex ? conditionIndex : 0" :sysCode="sysCode" :conNodes="conNodes" :formConfigData.sync="formConfigData"
 		:selectDataDispose="selectDataDispose"></Property>
-		<button @click="dataPost" style="position: fixed;z-index: 12321321;bottom: 0;">提交</button>
+		<!-- <button @click="dataPost" style="position: fixed;z-index: 12321321;bottom: 0;">提交</button> -->
 	</div>
 </template>
 
@@ -73,6 +73,7 @@
 			selectDataDispose: {
 				type: Array
 			},
+			appStyle: {}
 		},
 		components: {
 			NodeElement,

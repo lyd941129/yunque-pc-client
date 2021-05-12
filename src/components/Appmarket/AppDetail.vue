@@ -4,7 +4,7 @@
 		<!-- app -->
 		<div class="app-item">
 			<img class="icon-img" v-if="detail.app_style" :src="imgHttp+'/'+detail.app_style">
-			<i v-else class="icon" :class="detail.icon_url ? detail.icon_url : 'icon-project'"></i>
+			<i v-else class="big-icon" :class="detail.icon_url ? detail.icon_url : 'icon-project'"></i>
 			<div class="app-text">
 				<div class="app-title">{{detail.app_name}}</div>
 				<div class="app-dec">所属于{{detail.app_module}}模块</div>
@@ -84,11 +84,8 @@
 				width: 112px;
 				height: 112px;
 			}
-			.icon{
-				transform: scale(2.8);
+			.big-icon{
 				position: absolute;
-				top: 36px;
-				left: 36px;
 				cursor: default;
 			}
 			.app-text{
