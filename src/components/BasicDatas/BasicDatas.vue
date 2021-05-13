@@ -336,6 +336,9 @@ export default {
             display: none;
         }
     }
+    .tac{
+        overflow-y: auto;
+    }
 }
 
 </style>

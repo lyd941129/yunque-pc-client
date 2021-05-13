@@ -85,7 +85,7 @@
 						app_name: '角色管理',
 						icon: 'icon-role',
 						app_id: "jsgl",
-						type: 'Personnelmanagement'
+						type: 'Divisionalmanagement'
 					},{
 						app_name: '项目角色管理',
 						icon: 'icon-projectfirst',

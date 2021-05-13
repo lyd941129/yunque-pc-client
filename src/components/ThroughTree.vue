@@ -8,7 +8,7 @@
 			</div>
 			<div class="wordbox">
 				<!-- @node-click="" -->
-				<el-tree @check="getData" :check-strictly="true" show-checkbox class="filter-tree" node-key="id" :data="treeData" :default-expanded-keys="defaultShowNodes"
+				<el-tree @check="getData" :check-strictly="strictly" show-checkbox class="filter-tree" node-key="id" :data="treeData" :default-expanded-keys="defaultShowNodes"
 				:props="defaultProps" :filter-node-method="filterNode" ref="tree">
 					<span class="slot-t-node self-box" slot-scope="{node, data}">
 						<span v-if="node.label" style="font-weight:600">{{node.label}}</span>
@@ -56,6 +56,10 @@
 				
 			},
 			isMultiple:{
+				type: Boolean,
+				default: true
+			},
+			strictly: { // fale时，勾选父级时，选中的是没有子级的选项
 				type: Boolean,
 				default: true
 			}
@@ -137,10 +141,15 @@
 				}
 				this.keyarr = []
 				this.checkList = this.$refs.tree.getCheckedNodes();
+				
 				if (this.checkList.length != 0) {
 					for (var i = 0; i < this.checkList.length; i++) {
 						if (!this.checkList[i].children) {
-							this.keyarr.push(this.checkList[i])
+							let data = this.checkList[i]
+							if(!this.strictly && data.child){
+								continue;
+							}
+							this.keyarr.push(data)
 						}
 					}
 
