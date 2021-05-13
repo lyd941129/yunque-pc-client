@@ -2,7 +2,7 @@
 <template>
 	<div class="node">
 		<!-- 渲染普通节点 -->
-		<div v-if="nodedata && nodedata.type !== 'route'" class="node-diagram">
+		<div v-if="nodedata && nodedata.type !== 'route'" class="node-diagram" v-show="((nodedata.type === 'notifier' || nodedata.type === 'start') && appStyle == 1) || appStyle == 2">
 			<div class="node-diagram-box" :class="{'start-node': nodedata.type === 'start'}">
 				<div>
 					<div class="title" :style="color" @click="editChange">
@@ -69,7 +69,7 @@
 			</div>
 		</div>
 		<NodeElement v-if="nodedata && nodedata.childNode" :clearNode="clearNode" :parentData="nodedata" :nodedata="nodedata.childNode" :addNodeEntrance="addNodeEntrance" 
-		:openProperty="openProperty" :addCondition="addCondition" :selectDataDispose="selectDataDispose" :formConfigData="formConfigData"></NodeElement>
+		:openProperty="openProperty" :addCondition="addCondition" :selectDataDispose="selectDataDispose" :formConfigData="formConfigData" :appStyle="appStyle"></NodeElement>
 	</div>
 </template>
 
@@ -102,7 +102,7 @@
 			selectDataDispose: {
 				type: Array
 			},
-			
+			appStyle: {}
 		},
 		created() {
 			if(!this.nodedata){

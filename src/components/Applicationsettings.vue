@@ -15,7 +15,8 @@
 			<FromAndPrint :fromData.sync="getSet.form" :enableForm.sync="getSet.base.enable_form" :enableTemplate.sync="getSet.base.enable_template"
 			v-show="adhibition === 'from'"></FromAndPrint>
 			<Flow :selectData="fieldSelect" :flowData="getSet.flow.flow_set" :sysCode="getSet.sys_code" :formConfigData="getSet.formConfig" 
-			:selectDataDispose="jurisdictionExample" v-show="adhibition === 'flow'"></Flow>
+			:selectDataDispose="jurisdictionExample" v-show="adhibition === 'flow'"
+			:appStyle="getSet.base.app_type"></Flow>
 			<Advanced :advData.sync="getSet.base" v-show="adhibition === 'advanced'"></Advanced>
 			<MsgTemplate key="search" :selectData="fieldSelect" :templateData.sync="getSet.head" :searchData="getSet.search" searchJudge="yes" v-if="adhibition === 'search' && jiazai"></MsgTemplate>
 			<MsgTemplate key="msg" :selectData="fieldSelect" :templateData.sync="getSet.template" searchJudge="no" v-if="adhibition === 'msg' && jiazai"></MsgTemplate>
@@ -375,6 +376,17 @@
 							});
 						}
 						!that.isRefresh_l_s && (that.isRefresh_l_s = true);
+					}
+				}
+			},
+			'getSet.base.app_type':{
+				handler(val){
+					if(val == '1'){// 代表是表单类型
+						this.adhibitionArr[1].lable = '送阅配置';
+						this.adhibitionArr[1].status = '';
+					}else if(val == '2'){// 代表是表单加流程类型
+						this.adhibitionArr[1].lable = '审批流程';
+						this.adhibitionArr[1].status = 'required-css';
 					}
 				}
 			}
