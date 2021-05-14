@@ -34,14 +34,14 @@
 		<div class="right">
 			<template v-if="depRole === 'bmgl'">
 				<!-- 标题 -->
-				<div class="title">
+				<div v-show="JSON.stringify(checkData) !== '{}'" class="title">
 					<h2>{{title}}</h2>
 					<el-button round @click="setPartFn()">设置</el-button>
 				</div>
 				<div class="list-box">
 					<!-- 下级部门 -->
 					<div class="list">
-						<div class="list-title">
+						<div v-show="JSON.stringify(checkData) !== '{}'" class="list-title">
 							<i class="icon icon-grading"></i>
 							<h3>下级部门</h3>
 						</div>
@@ -76,7 +76,7 @@
 						</div>
 					</div>
 					<!-- 部门人员 -->
-					<div class="list" style="margin-top: 20px;">
+					<div v-show="JSON.stringify(checkData) !== '{}'" class="list" style="margin-top: 20px;">
 						<div class="list-title">
 							<i class="icon icon-persons"></i>
 							<h3>部门人员</h3>
@@ -103,31 +103,51 @@
 			</template>
 			<template v-if="depRole === 'jsgl'">
 				<!-- 标题 -->
-				<div class="title">
-					<h2><i class="icon icon-person-big"></i>{{title}}</h2>
-					<el-button round @click="setPartFn()">设置</el-button>
-				</div>
-				<div class="list-box">
-					<!-- 下级部门 -->
-					<div class="list role-list">
-						<div class="list-btn">
-							<el-row>
-								<el-button :disabled="dragShow" round @click="operatePersonFn(1)">添加成员</el-button>
-								<el-button :disabled="dragShow" round @click="operatePersonFn(3)">批量移除</el-button>
-							</el-row>
-						</div>
-						<div class="list-contant">
-							<el-table ref="multipleTable" :data="tableData" tooltip-effect="dark" style="width: 100%;" height="100%">
-								<el-table-column type="selection" width="55"></el-table-column>
-								<el-table-column prop="username" label="姓名"></el-table-column>
-								<el-table-column prop="depart_name" label="部门"></el-table-column>
-								<el-table-column prop="job_name" label="职位"></el-table-column>
-								<el-table-column prop="phone" label="手机号"></el-table-column>
-							</el-table>
-						</div>
+				<template v-if="rolePersonShow">
+					<div class="title">
+						<h2><i class="icon icon-person-big"></i>{{title}}</h2>
+						<el-button round @click="roleEditFn(2,checkData)">设置</el-button>
 					</div>
-					
-				</div>
+					<div class="list-box">
+						<!-- 下级部门 -->
+						<div class="list role-list">
+							<div class="list-btn">
+								<el-row>
+									<el-button :disabled="dragShow" round @click="operatePersonFn(1)">添加成员</el-button>
+									<el-button :disabled="dragShow" round @click="operatePersonFn(3)">批量移除</el-button>
+								</el-row>
+							</div>
+							<div class="list-contant">
+								<el-table ref="multipleTable" :data="tableData" tooltip-effect="dark" style="width: 100%;" height="100%">
+									<el-table-column type="selection" width="55"></el-table-column>
+									<el-table-column prop="username" label="姓名"></el-table-column>
+									<el-table-column prop="depart_name" label="部门"></el-table-column>
+									<el-table-column prop="job_name" label="职位"></el-table-column>
+									<el-table-column prop="phone" label="手机号"></el-table-column>
+								</el-table>
+							</div>
+						</div>
+						
+					</div>
+				</template>
+				<template v-if="!rolePersonShow">
+					<div>
+						<div class="no-treedata">
+							<img width="100%" src="./../assets/img/role-bg.png" alt="" srcset="">
+						</div>
+						<el-row class="role-operate ac">
+							<el-col :span="6" :offset="3">
+								<el-button type="primary" size="small" @click="roleEditFn(2)">添加角色</el-button>
+							</el-col>
+							<el-col :span="6" :offset="3">
+								<el-button type="primary" size="small" @click="roleEditFn(1)">添加角色组</el-button>
+							</el-col>
+							
+							
+						</el-row>
+					</div>
+				</template>
+				
 			</template>
 
 		</div>
@@ -149,6 +169,7 @@
 			</el-form>
 			<span slot="footer" class="dialog-footer">
 				<el-button type="primary" class="btn-dialog" @click="sureFn('form')">确 定</el-button>
+				<el-button v-show="depEdit.depart_id" type="danger" class="btn-dialog" @click="sureFn('form','del')">删 除</el-button>
 			</span>
 		</el-dialog>
 		<!-- 添加成员弹框 -->
@@ -182,7 +203,7 @@
 			</el-form>
 			<span slot="footer" class="dialog-footer">
 				<el-button type="primary" class="btn-dialog" @click="sureFn('roleForm')">确 定</el-button>
-				<el-button type="danger" class="btn-dialog" @click="sureFn('roleForm','del')">删 除</el-button>
+				<el-button v-show="roleEdit.id" type="danger" class="btn-dialog" @click="sureFn('roleForm','del')">删 除</el-button>
 			</span>
 		</el-dialog>
 		<!-- 添加角色分组弹框 -->
@@ -197,7 +218,7 @@
 			</el-form>
 			<span slot="footer" class="dialog-footer">
 				<el-button type="primary" class="btn-dialog" @click="sureFn('roleGroupForm')">保 存</el-button>
-				<el-button type="danger" class="btn-dialog" @click="sureFn('roleGroupForm','del')">删 除</el-button>
+				<el-button v-show="roleGroupEdit.id" type="danger" class="btn-dialog" @click="sureFn('roleGroupForm','del')">删 除</el-button>
 			</span>
 		</el-dialog>
 	</div>
@@ -243,6 +264,8 @@
 		},
 		data() {
 			return {
+				// 显示角色人员列表
+				rolePersonShow: false,
 				// tree父子关联
 				strictly: true,
 				// 部门 和 角色 切换
@@ -375,6 +398,10 @@
 						break;
 					case 2:
 						// 角色
+						if(!that.treeData.length){
+							that.$message.error('请先添加角色组，再添加角色');
+							return
+						}
 						if(data){
 							// 编辑
 							that.isRoleAdd = false;
@@ -477,12 +504,16 @@
 				let url = '/custom/depart/lists';
 				if(this.depRole === "jsgl"){
 					url = '/custom/role/list'
-					// 
+					// 角色列表
 				}
 				this.$axios.get(url).then(res => {
+					this.loading = false;
 					if(res.data.code === 1){
 						// console.log(res.data.data);
 						that.$set(that, 'treeData', res.data.data);
+						if(!that.treeData.length){
+							return
+						}
 						that.$nextTick(()=>{
 							that.checkData = that.$refs.tree.getNode(that.checkData.id || that.treeData[0].id).data
 							that.childDep(that.checkData)
@@ -502,7 +533,7 @@
 							}
 						}, 1000);
 					}
-					this.loading = false;
+					
 				}).catch(err => {
 					// console.log(err);
 					this.loading = false;
@@ -598,6 +629,14 @@
 						that.$refs.tree.setCurrentKey(that.checkData.id)
 					});
 				}else{
+					if(that.depRole === 'jsgl'){
+						if(val.group_name){
+							// 角色 =》分组
+							that.rolePersonShow = false
+							return
+						}
+						that.rolePersonShow = true
+					}
 					that.checkData = val
 					that.childDep(val);
 					that.childPerson(val);
@@ -606,7 +645,10 @@
 			// 设置当前部门名称和上级部门
 			setPartFn(data){
 				let node = data || this.$refs.tree.getCurrentNode(),
-					showDep = node.label.split(",");
+					showDep = [];
+				if(node.label){
+					showDep = node.label.split(",")
+				}
 				this.centerDialogVisible = true;
 				this.dalogTitle = node.dalogTitle || "编辑部门"
 				this.depEdit.depart_name = node.depart_name || ""
@@ -663,6 +705,12 @@
 								id : that.roleEdit.id
 							}
 							break;
+						case "form":
+							url = "/custom/depart/del"
+							option = {
+								depart_id : that.depEdit.depart_id
+							}
+							break;
 						default:
 							break;
 					}
@@ -679,6 +727,10 @@
 							that.centerDialogVisible = false;
 							that.roleEditDalog = false;
 							that.roleGroupEditDalog = false;
+							if(option.id === that.checkData.id || option.depart_id === that.checkData.id){
+								that.checkData = {}
+								that.rolePersonShow = false
+							}
 							that.refreshApi();
 						})
 
@@ -687,7 +739,6 @@
 					});
 					return
 				}
-
 				that.$refs[formName].validate((valid)=>{
 					if(valid){
 						// 验证成功
@@ -1041,7 +1092,7 @@
 		}
 
 		.right {
-			width: calc(100% - 260px);
+			width: calc(100% - 288px);
 			.title {
 				display: flex;
 				align-items: center;
