@@ -36,11 +36,11 @@
 				<!-- 标题 -->
 				<div v-show="JSON.stringify(checkData) !== '{}'" class="title">
 					<h2>{{title}}</h2>
-					<el-button round @click="setPartFn()">设置</el-button>
+					<el-button v-show="!checkData.customData" round @click="setPartFn()">设置</el-button>
 				</div>
 				<div class="list-box">
 					<!-- 下级部门 -->
-					<div class="list">
+					<div class="list" :class="{'role-list': checkData.customData}">
 						<div v-show="JSON.stringify(checkData) !== '{}'" class="list-title">
 							<i class="icon icon-grading"></i>
 							<h3>下级部门</h3>
@@ -76,7 +76,7 @@
 						</div>
 					</div>
 					<!-- 部门人员 -->
-					<div v-show="JSON.stringify(checkData) !== '{}'" class="list" style="margin-top: 20px;">
+					<div v-show="!checkData.customData && JSON.stringify(checkData) !== '{}'" class="list" style="margin-top: 20px;">
 						<div class="list-title">
 							<i class="icon icon-persons"></i>
 							<h3>部门人员</h3>
@@ -162,7 +162,7 @@
 					placeholder="默认空则是最顶级目录" 
 					clearable 
 					v-model="depEdit.showDep" 
-					:options="treeData" 
+					:options="treeData[0] && treeData[0].customData ? treeData[0].child : treeData" 
 					:props="depConfig" 
 					></el-cascader>
 				</el-form-item>
@@ -417,7 +417,7 @@
 							that.dalogTitle = "添加角色"
 							that.roleEdit = {
 								id: "",
-								group_id: that.treeData[0].id,
+								group_id: that.checkData.group_id || that.checkData.id,
 								role_name: "",
 								is_manager: 0
 							}
@@ -499,6 +499,9 @@
 				});
 			},
 			refreshApi(){// 数据获取
+				console.log(this.loginData)
+				
+				
 				var that = this;
 				this.loading = true;
 				let url = '/custom/depart/lists';
@@ -510,7 +513,18 @@
 					this.loading = false;
 					if(res.data.code === 1){
 						// console.log(res.data.data);
-						that.$set(that, 'treeData', res.data.data);
+						let treeData = [];
+						if(that.depRole === 'bmgl'){
+							treeData = [{
+								id: that.loginData.default_company.id,
+								customData: true, // 自定义的树数据
+								depart_name: that.loginData.default_company.name,
+								child: res.data.data
+							}]
+						}else{
+							treeData = res.data.data;
+						}
+						that.$set(that, 'treeData', treeData);
 						if(!that.treeData.length){
 							return
 						}
@@ -629,6 +643,7 @@
 						that.$refs.tree.setCurrentKey(that.checkData.id)
 					});
 				}else{
+					that.checkData = val
 					if(that.depRole === 'jsgl'){
 						if(val.group_name){
 							// 角色 =》分组
@@ -637,7 +652,6 @@
 						}
 						that.rolePersonShow = true
 					}
-					that.checkData = val
 					that.childDep(val);
 					that.childPerson(val);
 				}
@@ -654,6 +668,7 @@
 				this.depEdit.depart_name = node.depart_name || ""
 				this.depEdit.depart_id = node.id || ""
 				this.depEdit.parent_id = node.parent_id
+				
 				// id存在表明是编辑,否则便是新增
 				if(node.id){
 					showDep.pop()
@@ -810,7 +825,7 @@
 					case 1:
 						that.setPartFn({
 							label: that.checkData.label,
-							parent_id: that.checkData.id,
+							parent_id: that.checkData.customData ? "" : that.checkData.id,
 							dalogTitle: "添加子部门"
 						})
 						break;
