@@ -4,9 +4,9 @@
       <div class="pay-top dis-flex">
         <div class="pay-top-left average">
           <div class="tip">订单提交成功，请尽快付款！订单号 : {{itemData.subData.order_no}}</div>
-          <!--       <div class="">
-                       请您在<span class="red">1时30分60秒</span>内完成支付，否则订单会被自动取消。
-                   </div> -->
+              <div v-show="countDown" class="">
+                  请您在<span class="red">{{countDown}}</span>内完成支付，否则订单会被自动取消。
+              </div>
         </div>
         <div class="pay-top-right gray">
           <div class="for-money">
@@ -35,7 +35,7 @@
             
             <div class="bank-tip average">{{ item.type }}({{ item.no }})</div>
             <div v-show="isChecked(index)" class="for-money gray">
-              应付金额 : <span class="money red">65,200.00</span>元
+              应付金额 : <span class="money red">{{moneyFormat(itemData.subData.pay_price)}}</span>元
             </div>
           </div>
         </div>
@@ -58,19 +58,51 @@
           </div>
       </div>
     </div>
+    
+    <!-- 部门新增/编辑弹框 -->
+		<el-dialog :title="dalogTitle" @close="closeDialogFn" :visible.sync="centerDialogVisible" center width='530px'>
+			<div id="qrcode" ref="qrcode">
+      </div>
+      <!-- <div class="ac">
+        <span>二维码已失效，点击</span>
+        <el-button @click="refreshQrFn" type="text"><i data-v-61bf120c="" class="el-icon-refresh"></i>刷新</el-button>
+      </div> -->
+		</el-dialog>
   </div>
 </template>
 
 
 <script>
 import {moneyFormat} from '../../common/mixin/moneyFormat'
+import {countDownFn} from '../../common/mixin/countDown'
+import QRCode from 'qrcodejs2'
 export default {
   props: {
-      itemData:{}
+      itemData:{},
+      editableTabs: {},
+			editableTabsValue: {},
   },
-  mixins: [moneyFormat],
+  mixins: [moneyFormat,countDownFn],
   data() {
     return {
+      // 倒计时定时器
+      countDownPolling: "",
+      // 倒计时文本
+      countDown: "",
+      // 二维码生成
+      qrcode:"",
+      // 获取二维码的数据
+      qrData: {
+
+      },
+      // qr有效期，默认60秒
+      timing: 60,
+      // qr定时函数
+      qrTimingObj: "",
+      // 轮询查询是否已支付
+      polling: "",
+      dalogTitle: "微信支付",
+      centerDialogVisible: false,
       // 密码
       password: "",
       showDetail: false,
@@ -134,6 +166,11 @@ export default {
       }
   },
   methods: {
+      // 支付二维码弹框关闭时
+      closeDialogFn(){
+        clearInterval(that.polling)
+        clearInterval(that.qrTimingObj)
+      },
       // 选中支付方式(银行卡)
       checkBankFn(idx){
           this.checkBankIdx === idx ? this.checkBankIdx = -1 : this.checkBankIdx = idx
@@ -145,14 +182,135 @@ export default {
       // 第三方支付方式
       thirdFn(data){
           console.log(data)
+          this.dalogTitle = data.name
+          let url = "/custom/pay/payment",
+              option = {
+                pay_type: data.type,
+                order_id: this.itemData.subData.id
+              };
+          this.qrData = {
+            url: url,
+            option: option
+          }
+          this.refreshQrFn()
+
       },
       // 忘记密码
       forgetFn(){
           console.log("忘记密码")
+      },
+      // 轮询查询是否支付,5s查一次
+      pollingFn(){
+            //         let deldata = that.editableTabs.pop();
+            // that.$emit('updata:editableTabs', deldata);
+            // that.$emit('update:editableTabsValue', '1');
+            // return
+        let that = this;
+        clearInterval(that.polling)
+        that.polling = setInterval(() => {
+          that.postFn({
+            url: "/custom/order/find",
+            option: {
+              order_no: this.itemData.subData.order_no
+            }
+          },(res)=>{
+            if(res.data.pay_result === "TRADE_SUCCESS"){
+              clearInterval(that.polling)
+              that.centerDialogVisible = false
+              this.$message({
+                message: res.msg,
+                type: 'success'
+              });
+              let deldata = that.editableTabs.pop();
+              that.$emit('updata:editableTabs', deldata);
+              that.$emit('update:editableTabsValue', '1');
+            }
+          },()=>{
+            clearInterval(that.polling)
+          })
+        }, 5000);
+      },
+      // 二维码刷新
+      refreshQrFn(){
+        let that = this;
+        that.postFn(that.qrData,(res)=>{
+          that.centerDialogVisible = true
+          that.$nextTick(()=>{
+            that.pollingFn()
+            let timing = that.timing
+            clearInterval(that.qrTimingObj)
+            that.qrTimingObj = setInterval(() => {
+              timing -= 1
+              if(!timing){
+                clearInterval(that.qrTimingObj)
+                clearInterval(that.polling) // 轮训结束
+              }
+            }, 1000);
+            if(that.qrcode){
+              that.qrcode.makeCode(res.data.pay_code)
+              return
+            }
+            that.qrcode = new QRCode('qrcode',{
+                width: 240, // 设置宽度，单位像素
+                height: 240, // 设置高度，单位像素
+                text: res.data.pay_code
+            })
+          })
+        })
+      },
+      // post请求
+			postFn(Data,success,error){
+				this.loading = true
+				this.$axios.post(Data.url,Data.option).then(res => {
+					if(res.data.code === 1){
+						success(res.data)
+					}else{
+						this.overdueOperation(res.data.code, res.data.msg);
+					}
+					this.loading = false;
+				}).catch(err => {
+					this.loading = false;
+					this.$message({
+						message: err,
+						type: 'error'
+					});
+					error()
+				})
+			},
+      getCountDownFn(){
+        let that = this;
+        let row = that.itemData.subData
+        let timer = new Date(row.create_time).getTime() + row.expires - new Date().getTime(),
+          text = 0;
+        if(timer > 0){
+          // 还没超时
+          text = timer
+        }else{
+          // 超时了
+          clearInterval(this.countDownPolling)
+          row.installed = 0
+          that.$message({
+              message: "订单已超时，请重新下单",
+              type: 'error'
+          });
+          setTimeout(() => {
+            let deldata = that.editableTabs.pop();
+            that.$emit('updata:editableTabs', deldata);
+            that.$emit('update:editableTabsValue', '1');
+          }, 3000);
+        }
+        that.countDown = that.countDownFn(text)
       }
   },
   mounted(){
-      console.log(this.itemData)
+    let that = this;
+      that.countDownPolling = setInterval(() => {
+        that.getCountDownFn()
+        console.log("轮询咯")
+      }, 1000);
+  },
+  beforeDestroy(){
+    clearInterval(this.countDownPolling)
   }
 };
 </script>
@@ -163,6 +321,13 @@ export default {
   background-color: #fff;
   font-size: 16px;
   overflow-y: auto;
+  #qrcode{
+    // 支付二维码
+    display: flex;
+    /deep/ img{
+      margin: 10px auto;
+    }
+  }
   .pay-container {
     width: 900px;
     margin: 22px auto 0;
