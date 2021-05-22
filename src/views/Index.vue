@@ -74,6 +74,7 @@
 	import BillDetail from '../components/OrderRenewal/BillDetail.vue';
 	import Appmarket from '../components/Appmarket/Appmarket.vue';
 	import AppDetail from '../components/Appmarket/AppDetail.vue';
+	import SystemAgent from '../components/DataManagement/SystemAgent.vue';
 	
 	import axios from 'axios';
 	export default {
@@ -90,10 +91,11 @@
 			BillDetail,
 			Appmarket,
 			AppDetail,
+			SystemAgent
 		},
 		data() {
 			return {
-				activeIndex: 'enterprise',
+				activeIndex: 'personage',
 				editableTabsValue: '1',
 				appTabsValue: '1',
 				perTabsValue: '1',

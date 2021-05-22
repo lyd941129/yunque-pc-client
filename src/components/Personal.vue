@@ -1,4 +1,4 @@
-<!-- 企业管理 -->
+<!-- 个人管理 -->
 <template>
 	<div class="enterprise-box enterprise-box-index" v-loading="loading" @scroll="handleScroll" ref="content">
 		<!-- 锚点 -->
@@ -83,8 +83,8 @@
 					{
 						app_name: '系统助手',
 						icon: 'icon-SystemAgent',
-						app_id: "",
-						type: ''
+						app_id: "SystemAgent",
+						type: 'SystemAgent'
 					}
 				],
 				// 问题及反馈
