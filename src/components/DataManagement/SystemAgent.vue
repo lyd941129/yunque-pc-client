@@ -24,7 +24,7 @@
                     </el-col>
                 </template>
                 <template v-else-if="dataType === 'pic'">
-                    <div class="item-pic" v-for="(item,index) in tableData" :key="index">
+                    <div @click="detailTabFn(item)" class="item-pic" v-for="(item,index) in tableData" :key="index">
                         <el-image :src="item.cover_image" :alt="item.title" fit="cover"></el-image>
                         <div class="time">
                             <div class="time-top">09-20</div>
@@ -50,7 +50,9 @@
                                     <span class="show-hide">{{showHide(collapseName[index])}}</span>
                                 </div>
                             </template>
-                            <div class="collapse-content">与现实生活一致：与现实生活的流程、逻辑保持一致，遵循用户习惯的语言和概念；</div>
+                            <div class="collapse-content">
+                                {{item.content}}
+                            </div>
                         </el-collapse-item>
                     </el-collapse>
                 </template>
@@ -60,7 +62,7 @@
             </el-pagination>
         </div>
         <!-- 弹框 -->
-        <el-dialog class="only-body" title="视频播放" :visible.sync="videoDialog" center width='530px'>
+        <el-dialog class="only-body" title="视频播放" :visible.sync="videoDialog" center width='800px' :close-on-click-modal="false">
             <my-video v-if="videoDialog" class="my-video" :sources="sources" :option="options"></my-video>
         </el-dialog>
     </div>
@@ -153,6 +155,36 @@ export default {
         },
     },
     methods: {
+        // 图文资料=》打开详情页签
+        detailTabFn(item){
+            let that = this;
+            that.loading = true;
+            that.$axios.get("/custom/help/detail",{
+                params: {
+                    id: item.id
+                }
+            }).then((res)=>{
+                if(res.data.code === 1){
+                    that.$hfBus.$emit("addnewtabs",{
+                        tab: {
+                            app_name: "【图文资料】" + item.title,
+                            app_id: "HelpDetail" + item.id,
+                            type: "HelpDetail"
+                        },
+                        data: res.data.data
+                    })
+                }else{
+                    that.overdueOperation(res.data.code, res.data.msg);
+                }
+                that.loading = false;
+            }).catch((err)=>{
+                this.$message({
+                    message: err,
+                    type: 'error'
+                });
+                that.loading = false;
+            })
+        },
         // 列表查询
         searchFn(size){
             let that = this,

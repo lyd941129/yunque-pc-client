@@ -75,6 +75,7 @@
 	import Appmarket from '../components/Appmarket/Appmarket.vue';
 	import AppDetail from '../components/Appmarket/AppDetail.vue';
 	import SystemAgent from '../components/DataManagement/SystemAgent.vue';
+	import HelpDetail from '../components/DataManagement/HelpDetail.vue';
 	
 	import axios from 'axios';
 	export default {
@@ -91,7 +92,8 @@
 			BillDetail,
 			Appmarket,
 			AppDetail,
-			SystemAgent
+			SystemAgent,
+			HelpDetail
 		},
 		data() {
 			return {
