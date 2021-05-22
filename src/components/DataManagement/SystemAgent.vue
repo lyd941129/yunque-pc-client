@@ -24,7 +24,7 @@
                     </el-col>
                 </template>
                 <template v-else-if="dataType === 'pic'">
-                    <div @click="detailTabFn(item)" class="item-pic" v-for="(item,index) in tableData" :key="index">
+                    <div @click="detailTabFn(item)" class="item-pic cursor-p" v-for="(item,index) in tableData" :key="index">
                         <el-image :src="item.cover_image" :alt="item.title" fit="cover"></el-image>
                         <div class="time">
                             <div class="time-top">09-20</div>
