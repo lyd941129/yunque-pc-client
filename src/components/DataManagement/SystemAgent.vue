@@ -3,7 +3,7 @@
     <div class="enterprise-box dis-flex" v-loading="loading">
         <el-row class="tac">
 			<el-col :span="12">
-				<el-menu :default-active="adhibitionArr[0].value" class="el-menu-vertical-demo" @select="handlAdhibition">
+				<el-menu :default-active="adhibitionArr[0] && adhibitionArr[0].value" class="el-menu-vertical-demo" @select="handlAdhibition">
 					<el-menu-item v-for="(item, index) in adhibitionArr" :index="item.value" :key="index">
 						<span slot="title">{{item.name}}</span>
 					</el-menu-item>
@@ -101,23 +101,7 @@ export default {
             // 数据类型
             dataType: "video",
             // 左侧导航数据
-            adhibitionArr: [
-                {
-                    name: "视频资料",
-                    value: "1",
-                    type: "video"
-                },
-                {
-                    name: "图文资料",
-                    value: "2",
-                    type: "pic"
-                },
-                {
-                    name: "常见问题",
-                    value: "3",
-                    type: "text"
-                }
-            ],
+            adhibitionArr: [],
             // 总数
             total: 0,
             // 列表查询数据
@@ -245,6 +229,24 @@ export default {
     },
     mounted (){
         // 挂载之后执行
+        this.adhibitionArr = [
+            {
+                name: "视频资料",
+                value: "1",
+                type: "video"
+            },
+            {
+                name: "图文资料",
+                value: "2",
+                type: "pic"
+            },
+            {
+                name: "常见问题",
+                value: "3",
+                type: "text"
+            }
+        ]
+        this.dataType = "video"
         this.searchFn()
     }
 }

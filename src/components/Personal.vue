@@ -92,14 +92,14 @@
 					{
 						app_name: '常见问题',
 						icon: 'icon-commonProblem',
-						app_id: "",
-						type: ''
+						app_id: "commonProblem",
+						type: 'SystemAgent'
 					},
 					{
 						app_name: '我要反馈',
 						icon: 'icon-feedback',
-						app_id: "",
-						type: ''
+						app_id: "feedback",
+						type: 'Feedback'
 					}
 				],
 				anchorPointArr: [// 锚点数据
