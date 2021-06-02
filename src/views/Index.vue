@@ -38,6 +38,13 @@
 			</el-row>
 		</el-header>
 		<el-main>
+			
+			<!-- 个人管理 -->
+			<el-tabs v-if="activeIndex === 'personage'" id="main-tabs" v-model="perTabsValue" type="card" closable @tab-remove="removeTab">
+				<el-tab-pane v-for="(item, index) in perTabs" :key="item.name" :label="item.title" :name="item.name">
+					<component :ref="'applicat'+ item.name" :is="item.type" :key="item.type" :adhibitionFun="adhibitionFun" :itemData="item" :editableTabs.sync="perTabs" :editableTabsValue.sync="perTabsValue"></component>
+				</el-tab-pane>
+			</el-tabs>
 			<!-- 企业管理 -->
 			<el-tabs v-if="activeIndex === 'enterprise'" id="main-tabs" v-model="editableTabsValue" type="card" closable @tab-remove="removeTab">
 				<el-tab-pane v-for="(item, index) in editableTabs" :key="item.name" :label="item.title" :name="item.name">
@@ -56,6 +63,7 @@
 
 <script>
 	import Management from '../components/Management.vue';
+	import Personal from '../components/Personal.vue';
 	import Applicationsettings from '../components/Applicationsettings.vue';
 	import Personnelmanagement from '../components/Personnelmanagement.vue';
 	import Divisionalmanagement from '../components/Divisionalmanagement.vue';
@@ -66,11 +74,15 @@
 	import BillDetail from '../components/OrderRenewal/BillDetail.vue';
 	import Appmarket from '../components/Appmarket/Appmarket.vue';
 	import AppDetail from '../components/Appmarket/AppDetail.vue';
+	import SystemAgent from '../components/DataManagement/SystemAgent.vue';
+	import HelpDetail from '../components/DataManagement/HelpDetail.vue';
+	import Feedback from '../components/DataManagement/Feedback.vue';
 	
 	import axios from 'axios';
 	export default {
 		components: {
 			Management,
+			Personal,
 			Applicationsettings,
 			Personnelmanagement,
 			Divisionalmanagement,
@@ -81,12 +93,16 @@
 			BillDetail,
 			Appmarket,
 			AppDetail,
+			SystemAgent,
+			HelpDetail,
+			Feedback
 		},
 		data() {
 			return {
-				activeIndex: 'enterprise',
+				activeIndex: 'personage',
 				editableTabsValue: '1',
 				appTabsValue: '1',
+				perTabsValue: '1',
 				editableTabs: [{
 						title: '企业管理',
 						name: '1',
@@ -99,6 +115,13 @@
 						type: 'Appmarket',
 						information: '',
 					},
+				],
+				perTabs: [
+					{
+						title: '个人管理',
+						name: '1',
+						type: 'Personal'
+					}
 				],
 				flowConditionArr: [],
 				adhibitionArrData: [],
@@ -113,11 +136,14 @@
 				return function (){ 
 					let falg = false;
 					let that = this;
-					let obj = this.editableTabs.filter(function(s){
-						return s.name == that.editableTabsValue;
-					});
-					if(obj.length > 0 && obj[0].type == 'Applicationsettings'){
-						falg = true;
+					if(that.activeIndex === 'enterprise'){
+						// 企业管理
+						let obj = this.editableTabs.filter(function(s){
+							return s.name == that.editableTabsValue;
+						});
+						if(obj.length > 0 && obj[0].type == 'Applicationsettings'){
+							falg = true;
+						}
 					}
 					return falg;
 				}
@@ -199,24 +225,33 @@
 				
 			},
 			adhibitionFun(objData,subData){// 新增页签
-				let that = this;
-				let obj = that.editableTabs.filter(function(s){
+				let that = this,
+					type = 'editableTabs',
+					tabValueType = 'editableTabsValue';
+				if(that.activeIndex === 'personage'){
+					type = 'perTabs'
+					tabValueType = 'perTabsValue'
+				}
+
+
+
+				let obj = that[type].filter(function(s){
 					return objData.app_id == s.app_id;
 				});
 				if(obj.length > 0){
-					that.editableTabsValue = obj[0].name + '';
+					that[tabValueType] = obj[0].name + '';
 					return
 				}
-				that.editableTabs.push({
+				that[type].push({
 					title: objData.app_name,
 					name: that.addNum + '',
 					type: objData.type ? objData.type : 'Applicationsettings',
 					app_id: objData.app_id,
 					ca_id: objData.ca_id,
-					lengthNum:  that.editableTabs.length,
+					lengthNum:  that[type].length,
 					subData: subData || ""
 				});
-				that.editableTabsValue = that.addNum + '';
+				that[tabValueType] = that.addNum + '';
 				that.addNum = ++that.addNum;
 			},
 			handleSelect(key, keyPath) {// 顶部分栏切换事件
@@ -253,8 +288,14 @@
 				this.adhibition = key;
 			},
 			removeTab(targetName) {
-				let tabs = this.editableTabs;
-				let activeName = this.editableTabsValue;
+				let type = 'editableTabs',
+				tabValueType = 'editableTabsValue';
+				if(this.activeIndex === 'personage'){
+					type = 'perTabs'
+					tabValueType = 'perTabsValue'
+				}
+				let tabs = this[type],
+					activeName = this[tabValueType];
 				if(targetName == 1){
 					return
 				}
@@ -268,11 +309,11 @@
 						}
 					});
 				}
-				this.editableTabsValue = activeName;
-				this.editableTabs = tabs.filter(tab => tab.name !== targetName);
+				this[tabValueType] = activeName;
+				this[type] = tabs.filter(tab => tab.name !== targetName);
 			},
 			release() {// 发布按钮事件
-				let postGetSet = this.$refs['applicat'+(this.editableTabsValue)][0].getSet;
+				let postGetSet = this.$refs['applicat'+(this[tabValueType])][0].getSet;
 				let that = this;
 				for(let key in postGetSet.formConfig){
 					if(!postGetSet.formConfig[key].length){
@@ -342,6 +383,9 @@
 				that.editableTabs = [that.editableTabs[0]];
 				that.editableTabsValue = '1';
 				that.$refs.applicat1[0].getData();
+				// 个人管理
+				that.perTabs = [that.perTabs[0]]
+				that.perTabsValue = '1'
 			},
 			// 应用市场
 			adAppFun(grop, app){// 应用市场新增页签

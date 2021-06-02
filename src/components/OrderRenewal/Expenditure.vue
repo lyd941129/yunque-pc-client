@@ -149,107 +149,7 @@ export default {
                 dict_label: "", // 查询的值
             },
             // 服务数据
-            serveData: [
-/*                 {
-                    id: "167570907815153665",
-                    name: "软件续费",
-                    price: "10.00",
-                    type: 1,
-                    describe: "建筑装饰行业SAAS项目管理软件续费" ,
-                    packages: [
-                        {
-                            id: "164405520063606785",
-                            serve_id: "167570907815153665",
-                            type: 1,
-                            name: "三个月",
-                            price: "0.01",
-                            duration: 3,
-                            sort: 0
-                        },
-                        {
-                            id: "164405736573579264",
-                            serve_id: "167570907815153665",
-                            type: 1,
-                            name: "半年",
-                            price: "5000.00",
-                            duration: 6,
-                            sort: 0
-                        },
-                        {
-                            id: "164405882334031872",
-                            serve_id: "167570907815153665",
-                            type: 1,
-                            name: "一年",
-                            price: "10000.00",
-                            duration: 12,
-                            sort: 0
-                        }
-                    ]
-                },
-                {
-                    id: "167915184705482752",
-                    name: "增值服务",
-                    price: "0.00",
-                    type: 2,
-                    describe: "短信套餐、OCR发票识别等",
-                    packages: [
-                        [{
-                            id: "215435887877369857",
-                            serve_id: "167915184705482752",
-                            type: 2,
-                            name: "短信套餐",
-                            price: "0.01",
-                            duration: 1000,
-                            sort: 0
-                        },
-                        {
-                            id: "215435963798466560",
-                            serve_id: "167915184705482752",
-                            type: 2,
-                            name: "短信套餐",
-                            price: "0.01",
-                            duration: 5000,
-                            sort: 0
-                        },
-                        {
-                            id: "215436091540189184",
-                            serve_id: "167915184705482752",
-                            type: 2,
-                            name: "短信套餐",
-                            price: "880.00",
-                            duration: 10000,
-                            sort: 0
-                        }],
-                        [{
-                            id: "215436540771119104",
-                            serve_id: "167915184705482752",
-                            type: 3,
-                            name: "发票识别",
-                            price: "0.01",
-                            duration: 1000,
-                            sort: 0
-                        },
-                        {
-                            id: "215436652398325760",
-                            serve_id: "167915184705482752",
-                            type: 3,
-                            name: "发票识别",
-                            price: "0.01",
-                            duration: 5000,
-                            sort: 0
-                        },
-                        {
-                            id: "215436749219639296",
-                            serve_id: "167915184705482752",
-                            type: 3,
-                            name: "发票识别",
-                            price: "1500.00",
-                            duration: 10000,
-                            sort: 0
-                        }]
-                    ]
-                } */
-            ]
+            serveData: []
         }
     },
     methods: {
@@ -304,7 +204,7 @@ export default {
                     let Data = {
                         tab: {
                             app_name: "订单付款",
-                            app_id: "OrderPay",
+                            app_id: "OrderPay" + res.data.data.id,
                             type: "OrderPay"
                         },
                         data: res.data.data

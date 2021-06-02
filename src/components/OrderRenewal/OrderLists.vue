@@ -83,11 +83,14 @@
 <script>
 import GridManager from 'gridmanager-vue';
 import 'gridmanager-vue/css/gm-vue.css';
+import {countDownFn} from '../../common/mixin/countDown'
 import distData from './../../../static/js/city/dist'
+let currVM;
 export default {
     props: {
         itemData:{}
     },
+    mixins: [countDownFn],
     components: {
         GridManager
     },
@@ -140,6 +143,13 @@ export default {
     },
     data(){
         return {
+            // 订单倒计时轮询
+            countDownPolling: null,
+            // 是否需要需要轮询
+            isPolling: true,
+            // 订单倒计时结束时的查询函数是否在执行
+            getOrderStatus: false,
+            // 地址数据
             distData: [],
             // 开票的数据
             editData: {
@@ -179,7 +189,8 @@ export default {
             callback: function(query) {
                 console.log('callback => ', query);
             },
-
+            // 表格数据
+            tableData:[],
             // 表格
             gridOption: {
                 // 表格唯一标识
@@ -195,15 +206,22 @@ export default {
                     // 行间隔,默认为0
                     interval: 20,
                     // 模板
-                    topTemplate(row){
-                        return '<div class="tr-banner">'
-                                + '<span>'
-                                + row.create_time
-                                + '</span>'
-                                + '<span>订单号 : '
-                                + row.order_no
-                                + '</span>'
-                                +'</div>';
+                    topTemplate(row,idx){
+                        return `<div class="tr-banner">
+                            <span>创建时间 :
+                            ${row.create_time}
+                            </span> 
+                            <span>订单号 : 
+                                ${row.order_no}
+                            </span>
+                            <span class="red" v-if="tableData[${idx}].installed && !row.pay_time">订单还有 : 
+                                {{tableData[${idx}].showCountDown}}
+                                失效
+                            </span>
+                            <span v-if="row.pay_time">支付时间 : 
+                                {{row.pay_time}}
+                            </span>
+                            </div>`;
                     }
                 },
                 // 单行数据渲染时执行
@@ -251,17 +269,27 @@ export default {
                         key: 'pay_status',
                         text: '状态',
                         align: 'center',
-                        template(e,row){
+                        template(e,row,idx){
                             return `
-                            ${e === 1 ? '<div class="yellow">未付款</div>' : e === 2 ? '<div class="green">已付款</div>' : '<div class="gray">已退款</div>'}
-                            ${row.invoice_log_id ? '<div class="red">已开票</div>' : e === 2 ? '<div class="">未开票</div>' : ''}
+                                <div v-if="row.pay_status === 1 && tableData[${idx}].installed" class="yellow">未付款</div>
+                                <div v-if="row.pay_status === 1 && !tableData[${idx}].installed" class="gray">超时已关闭</div>
+                                <div v-if="row.pay_status === 2"class="green">已付款</div>
+                                <div v-if="row.pay_status === 3" class="gray">已退款</div>
+                                <div v-if="row.invoice_log_id" class="red">已开票</div>
+                                <div v-if="row.invoice_log_id && row.pay_status === 2" class="">未开票</div>
+
+                                
                             `
+                      /*       return `
+                            ${e === 1 ? (row.installed ? '<div class="yellow">未付款</div>' : '<div class="gray">超时已关闭</div>') : e === 2 ? '<div class="green">已付款</div>' : '<div class="gray">已退款</div>'}
+                            ${row.invoice_log_id ? '<div class="red">已开票</div>' : e === 2 ? '<div class="">未开票</div>' : ''}
+                            ` */
                         }
                     },{
                         key: 'hf-operate',
                         text: '操作',
                         align: 'center',
-                        template(e,row) {
+                        template(e,row,idx) {
                             return `
                             <ul class="operate-btn blue">
                                 <li v-if="Boolean(row.invoice_log_id)">
@@ -270,10 +298,10 @@ export default {
                                 <li v-else-if="row.pay_status === 2">
                                     <span @click="operateFn(2,row)">申请发票</span>
                                 </li>
-                                <li v-else-if="row.pay_status === 1">
+                                <li v-else-if="tableData[${idx}].installed && row.pay_status === 1">
                                     <span @click="operateFn(3,row)">去付款</span>
                                 </li>
-                                <li v-if="row.pay_status === 1 || row.pay_status === 3" class="gray">
+                                <li v-if="!tableData[${idx}].installed || row.pay_status === 1 || row.pay_status === 3" class="gray">
                                     <span class="font-min" @click="operateFn(4,row)">删除订单</span>
                                 </li>
                             </ul>
@@ -409,7 +437,7 @@ export default {
                     this.$hfBus.$emit("addnewtabs",{
                         tab: {
                             app_name: "订单付款",
-                            app_id: "OrderPay",
+                            app_id: "OrderPay" + data.id,
                             type: "OrderPay"
                         },
                         data: data
@@ -449,14 +477,14 @@ export default {
                         case 2:
                             // 申请
                             this.centerDialogVisible = false
-                            this.searchFn()
+                            this.searchFn(this.searchLists.page)
                             break;
                         case 3:
                             // 去支付
                             break;
                         case 4:
                             // 删除
-                            this.searchFn()
+                            this.searchFn(this.searchLists.page)
                             break;
                         default:
                             break;
@@ -495,6 +523,34 @@ export default {
         onScreen(e){
             this.searchFn()
         },
+        // 剩余时间的毫秒
+        countDataFn(row){
+            console.log("轮询了")
+            if(row.installed === 1 && !row.pay_time){
+                let timer = new Date(row.create_time).getTime() + row.expires - new Date().getTime(),
+                    text = 0;
+                if(timer > 0){
+                    // 还没超时
+                    text = timer
+                    this.isPolling = true
+                    this.$set(row,"showCountDown",this.countDownFn(text))
+                }else{
+                    // 超时了
+                    row.installed = 0
+                    // 刷新数据
+                    // this.getOrderStatusFn()
+                }
+
+            }
+        },
+        // 订单倒计时结束时，进行查询获取最新状态
+        getOrderStatusFn(){
+            if(this.getOrderStatus){
+                return
+            }
+            this.getOrderStatus = true
+            this.searchFn(this.searchLists.page)
+        },
         // 列表查询
         searchFn(size){
             // GridManager.setAjaxData('girdTable', );
@@ -506,6 +562,23 @@ export default {
                 params: this.searchLists
             }).then((res)=>{
                 if(res.data.code === 1){
+                    that.tableData = res.data.data.list
+                    that.tableData.map((v)=>{
+                        that.countDataFn(v)
+                    })
+                    that.getOrderStatus = false
+                    clearInterval(that.countDownPolling)
+                    that.isPolling = true;
+                    that.countDownPolling = setInterval(() => {
+                        if(!that.isPolling){
+                            clearInterval(that.countDownPolling)
+                        }
+                        that.isPolling = false
+                        that.tableData.map((v)=>{
+                            that.countDataFn(v)
+                        })
+                    }, 1000);
+
                     GridManager.setAjaxData('girdTable', {data: res.data.data.list});
                     that.total = res.data.data.total
                 }else{
@@ -527,8 +600,12 @@ export default {
         }
     },
     mounted(){
+        currVM = this
         this.searchFn()
         this.distData = distData.distData
+    },
+    beforeDestroy(){
+        clearInterval(this.countDownPolling)
     }
 }
 </script>
@@ -566,7 +643,7 @@ export default {
                 font-size: 14px;
                 color: #333;
                 span{
-                    padding: 0 70px 0 20px
+                    padding: 0 50px 0 20px
                 }
             }
             .full-column-div,
