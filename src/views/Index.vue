@@ -313,6 +313,7 @@
 				this[type] = tabs.filter(tab => tab.name !== targetName);
 			},
 			release() {// 发布按钮事件
+				let tabValueType = 'editableTabsValue';
 				let postGetSet = this.$refs['applicat'+(this[tabValueType])][0].getSet;
 				let that = this;
 				for(let key in postGetSet.formConfig){
