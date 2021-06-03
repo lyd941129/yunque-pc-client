@@ -2,7 +2,7 @@
     <div class="feedback-container">
         <el-form :model="itemData" :rules="rules" ref="form" label-width="135px">
             <el-form-item label="问题描述" prop="content">
-                <el-input type="textarea" v-model="itemData.content" clearable></el-input>
+                <el-input :rows="5" type="textarea" v-model="itemData.content" clearable></el-input>
             </el-form-item>
             <el-form-item label="问题类型" clearable prop="type">
                 <el-select class="w-100" v-model="itemData.type" placeholder="请选择...">
@@ -16,7 +16,10 @@
             </el-form-item>
             <el-form-item label="问题截图" prop="content">
                 <el-upload
-                    action=""
+                    :limit="9"
+                    :on-exceed="handleExceed"
+                    ref="upload"
+                    action="#"
                     :http-request="uploadFn"
                     :before-remove="beforeRemoveFn"
                     list-type="picture-card"
@@ -79,6 +82,12 @@ export default {
         }
     },
     methods: {
+        // 上传图片之前
+        handleExceed(file){
+            // console.log(file)
+            // return false
+            console.log("超限制了")
+        },
         // 确定
         sureFn(){
             this.$emit("hfsure",this.itemData)
@@ -97,6 +106,10 @@ export default {
         },
         // 图片上传
         uploadFn(obj){
+            
+
+            console.log(this.$refs.upload.uploadFiles)
+            let idx = this.$refs.upload.uploadFiles.length - 1
             let url = "/custom/file/upload",
                 that = this,
                 fd = new FormData()
@@ -105,12 +118,14 @@ export default {
             that.$axios.post(url,fd).then(res => {
                 if(res.data.code === 1){
                     console.log(res)
-                    that.itemData.image.push(res.data.data.file_url)
+                    that.itemData.image[idx] = res.data.data.file_url
                 }else{
                     that.overdueOperation(res.data.code, res.data.msg);
+                    that.$refs.upload.uploadFiles.splice(idx,1)
                 }
                 that.loading = false;
             }).catch(err => {
+                that.$refs.upload.uploadFiles.splice(idx,1)
                 that.loading = false;
                 that.$message({
                     message: err,

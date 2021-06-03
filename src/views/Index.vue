@@ -77,6 +77,7 @@
 	import SystemAgent from '../components/DataManagement/SystemAgent.vue';
 	import HelpDetail from '../components/DataManagement/HelpDetail.vue';
 	import Feedback from '../components/DataManagement/Feedback.vue';
+	import FeedbackDetail from '../components/DataManagement/FeedbackDetail.vue';
 	
 	import axios from 'axios';
 	export default {
@@ -95,7 +96,8 @@
 			AppDetail,
 			SystemAgent,
 			HelpDetail,
-			Feedback
+			Feedback,
+			FeedbackDetail
 		},
 		data() {
 			return {
