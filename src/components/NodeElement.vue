@@ -2,7 +2,7 @@
 <template>
 	<div class="node">
 		<!-- 渲染普通节点 -->
-		<div v-if="nodedata && nodedata.type !== 'route'" class="node-diagram" v-show="((nodedata.type === 'notifier' || nodedata.type === 'start') && appStyle == 1) || appStyle == 2">
+		<div v-if="nodedata && nodedata.type !== 'route'" class="node-diagram" v-show="(((nodedata.type === 'notifier' || nodedata.type === 'start') && appStyle == 1) || appStyle == 2)">
 			<div class="node-diagram-box" :class="{'start-node': nodedata.type === 'start'}">
 				<div>
 					<div class="title" :style="color" @click="editChange">
@@ -55,8 +55,8 @@
 								</div>
 							</div>
 						</div>
-						<NodeElement v-if="item && item.childNode" :clearNode="clearNode" :parentData="item" :nodedata="item.childNode" :addNodeEntrance="addNodeEntrance" 
-						:openProperty="openProperty" :addCondition="addCondition" :selectDataDispose="selectDataDispose" :formConfigData="formConfigData"></NodeElement>
+						<NodeElement v-if="item.childNode" :clearNode="clearNode" :parentData="item" :nodedata="item.childNode" :addNodeEntrance="addNodeEntrance" 
+						:openProperty="openProperty" :addCondition="addCondition" :selectDataDispose="selectDataDispose" :formConfigData="formConfigData" :appStyle="appStyle"></NodeElement>
 					</div>
 				</div>
 				<div class="add-node-btn-box">
