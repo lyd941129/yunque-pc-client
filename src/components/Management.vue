@@ -98,8 +98,8 @@
 					{
 						app_name: '成员使用统计',
 						icon: 'icon-statistics',
-						app_id: "statistics",
-						type: 'statistics'
+						app_id: "Statistics",
+						type: 'Statistics'
 					},
 					{
 						app_name: '管理员操作记录',

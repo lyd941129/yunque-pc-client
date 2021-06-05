@@ -69,6 +69,7 @@
 	import Divisionalmanagement from '../components/Divisionalmanagement.vue';
 	import BasicDatas from '../components/BasicDatas/BasicDatas.vue';
 	import Bperation from '../components/Bperation/Bperation.vue';
+	import Statistics from '../components/Statistics/Statistics.vue';
 	import OrderLists from '../components/OrderRenewal/OrderLists.vue';
 	import Expenditure from '../components/OrderRenewal/Expenditure.vue';
 	import OrderPay from '../components/OrderRenewal/OrderPay.vue';
@@ -90,6 +91,7 @@
 			Divisionalmanagement,
 			BasicDatas,
 			Bperation,
+			Statistics,
 			OrderLists,
 			Expenditure,
 			OrderPay,
