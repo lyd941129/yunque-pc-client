@@ -377,7 +377,7 @@
 		.table-box {
 			height: calc(100% - 104px);
 			&.table-box-btn{
-				height: calc(100% - 154px);
+				height: calc(100% - 216px);
 				margin-top: 20px;
 			}
 		}

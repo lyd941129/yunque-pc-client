@@ -104,8 +104,8 @@
 					{
 						app_name: '管理员操作记录',
 						icon: 'icon-operation',
-						app_id: "operation",
-						type: 'operation'
+						app_id: "Bperation",
+						type: 'Bperation'
 					},
 					{
 						app_name: '基础数据管理',
