@@ -29,7 +29,7 @@
 						<el-dropdown-menu slot="dropdown">
 							<el-dropdown-item>个人信息</el-dropdown-item>
 							<el-dropdown-item>修改密码</el-dropdown-item>
-							<el-dropdown-item>更换主管理员</el-dropdown-item>
+							<el-dropdown-item command="changeAdmin">更换主管理员</el-dropdown-item>
 							<el-dropdown-item>注销账户</el-dropdown-item>
 							<el-dropdown-item command="logout">退出</el-dropdown-item>
 						</el-dropdown-menu>
@@ -58,6 +58,8 @@
 				</el-tab-pane>
 			</el-tabs>
 		</el-main>
+		<!-- 更换主管理员 -->
+		<admin-chnage v-if="showAdmin" :mainData="adminChangeData" @close="closeAdminFn"></admin-chnage>
 	</el-container>
 </template>
 
@@ -80,6 +82,7 @@
 	import HelpDetail from '../components/DataManagement/HelpDetail.vue';
 	import Feedback from '../components/DataManagement/Feedback.vue';
 	import FeedbackDetail from '../components/DataManagement/FeedbackDetail.vue';
+	import AdminChnage from '../components/AdminChange.vue'
 	
 	import axios from 'axios';
 	export default {
@@ -101,7 +104,8 @@
 			SystemAgent,
 			HelpDetail,
 			Feedback,
-			FeedbackDetail
+			FeedbackDetail,
+			AdminChnage
 		},
 		data() {
 			return {
@@ -135,6 +139,14 @@
 				enterpriseList: [],
 				addNum: '2',
 				applicationModule: [],
+				// 更换主管理员数据
+				showAdmin: false,
+				adminChangeData: {
+					phone: "",
+					username: "",
+					code: "",
+					user_id: ""
+				}
 			}
 		},
 		computed:{
@@ -181,6 +193,11 @@
 			this.$hfBus.$off(['addnewtabs'])
 		},
 		methods: {
+			// 关闭更换主管理员的弹框
+			closeAdminFn(data){
+				console.log(12321323132)
+				this.showAdmin = false
+			},
 			// 企业管理
 			handleEnterpriseList(val){// 切换企业
 				let that = this;
@@ -226,6 +243,39 @@
 							that.$message.error(msg);
 							that.loading = false;
 						});
+						break;
+					case "changeAdmin": // 更换主管理员
+						this.$axios.get("/custom/company/info").then((res)=>{
+							if(res.data.code === 1){
+								if(res.data.data.master){
+									that.adminChangeData = {
+										phone: res.data.data.master.phone,
+										username: res.data.data.master.username,
+										code: "",
+										user_id: ""
+									}
+									that.showAdmin = true
+								}else{
+									this.$message({
+										message: "当前企业没有设置主管理员",
+										type: 'error'
+									});
+								}
+								
+							}else{
+								that.overdueOperation(res.data.code, res.data.msg);
+							}
+							// console.log(that.getSet)
+						}).catch((err)=>{
+							// console.log(err);
+							this.$message({
+								message: err,
+								type: 'error'
+							});
+						})
+
+						break;
+					default:
 						break;
 				}
 				
@@ -431,7 +481,7 @@
 				}
 				this.appTabsValue = activeName;
 				this.appTabs = tabs.filter(tab => tab.name !== targetName);
-			},
+			}
 		},
 	}
 </script>

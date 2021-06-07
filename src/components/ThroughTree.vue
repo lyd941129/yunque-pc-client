@@ -62,6 +62,11 @@
 			strictly: { // fale时，勾选父级时，选中的是没有子级的选项
 				type: Boolean,
 				default: true
+			},
+			// 只能勾选人员
+			onlyPerson: {
+				type: Boolean,
+				default: false
 			}
 		},
 		data() {
@@ -179,6 +184,13 @@
 				this.setCheckedNodes(this.keyarr);
 			},
 		},
+		mounted(){
+			if(this.onlyPerson){
+				this.treeData.map((v)=>{
+					v.user_id ? "" : v.disabled = false
+				})
+			}
+		}
 	};
 </script>
 <style lang="less">
