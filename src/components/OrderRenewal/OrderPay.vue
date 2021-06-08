@@ -168,8 +168,8 @@ export default {
   methods: {
       // 支付二维码弹框关闭时
       closeDialogFn(){
-        clearInterval(that.polling)
-        clearInterval(that.qrTimingObj)
+        clearInterval(this.polling)
+        clearInterval(this.qrTimingObj)
       },
       // 选中支付方式(银行卡)
       checkBankFn(idx){

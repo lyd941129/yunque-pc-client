@@ -10,6 +10,7 @@
   "dependencies": {
     "axios": "^0.20.0",
     "core-js": "^3.6.5",
+    "echarts": "^5.1.1",
     "element-ui": "^2.13.2",
     "gridmanager": "^2.15.0",
     "gridmanager-vue": "^1.9.0",

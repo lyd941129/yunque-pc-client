@@ -98,14 +98,14 @@
 					{
 						app_name: '成员使用统计',
 						icon: 'icon-statistics',
-						app_id: "statistics",
-						type: 'statistics'
+						app_id: "Statistics",
+						type: 'Statistics'
 					},
 					{
 						app_name: '管理员操作记录',
 						icon: 'icon-operation',
-						app_id: "operation",
-						type: 'operation'
+						app_id: "Bperation",
+						type: 'Bperation'
 					},
 					{
 						app_name: '基础数据管理',
