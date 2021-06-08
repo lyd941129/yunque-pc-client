@@ -86,7 +86,8 @@ export default {
             // video组件配置
             sources: [
                 {
-                    src: "http://vjs.zencdn.net/v/oceans.mp4"
+                    // src: "http://vjs.zencdn.net/v/oceans.mp4"
+                    src:""
                 }
             ],
             // video配置
@@ -221,7 +222,6 @@ export default {
         playVideoFn(item){
             console.log(item)
             this.videoDialog = true
-            return
             this.options.poster = item.cover_image
             this.sources[0].src = item.content
 
