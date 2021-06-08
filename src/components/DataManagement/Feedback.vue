@@ -3,7 +3,7 @@
     <div class="enterprise-box dis-flex" v-loading="loading">
         <el-row class="tac">
 			<el-col :span="12">
-				<el-menu :default-active="adhibitionArr[0] && adhibitionArr[0].value" class="el-menu-vertical-demo" @select="handlAdhibition">
+				<el-menu :default-active="selectVal || adhibitionArr[0] && adhibitionArr[0].value" class="el-menu-vertical-demo" @select="handlAdhibition">
 					<el-menu-item v-for="(item, index) in adhibitionArr" :index="item.value" :key="index">
 						<span slot="title">{{item.name}}</span>
 					</el-menu-item>
@@ -94,6 +94,7 @@ export default {
             dataType: "edit",
             // 左侧导航数据
             adhibitionArr: [],
+            selectVal: null,
             // 总数
             total: 0,
             // 列表查询数据
@@ -117,7 +118,6 @@ export default {
     methods: {
         // 反馈提交
         setFeedbackFn(data){
-            console.log(data)
             this.loading = true;
             this.$axios.post("/custom/feed/add",data).then(res => {
                 if(res.data.code === 1){
@@ -134,8 +134,9 @@ export default {
                     this.feedbackRefresh = false
                     this.$nextTick(()=>{
                         this.feedbackRefresh = true
+                        this.handlAdhibition("2")
+                        this.selectVal = "2"
                     })
-
 
                 }else{
                     this.overdueOperation(res.data.code, res.data.msg);
@@ -179,8 +180,8 @@ export default {
             })
         },
         // 左侧导航切换
-        handlAdhibition(key){
-            
+        handlAdhibition(key,keyPath){
+            this.selectVal = key
             let itemData = this.adhibitionArr.find((e)=>{
                 return e.value === key
             })
