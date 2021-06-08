@@ -42,7 +42,7 @@
                 </template>
                 <template v-else>
                     <el-collapse v-model="collapseShowData">
-                        <el-collapse-item class="item-text" v-for="(item,index) in tableData" :key="index" :name="collapseName[index]">
+                        <el-collapse-item  class="item-text" v-for="(item,index) in tableData" :key="index" :name="collapseName[index]">
                             <template slot="title">
                                 <div class="dis-flex title-block">
                                     <i class="icon icon-add-mark mark-count">Q{{index + 1}}</i>
@@ -51,11 +51,12 @@
                                 </div>
                             </template>
                             <div class="collapse-content">
-                                {{item.content}}
+                                {{item.content || item.reply}}
                             </div>
                         </el-collapse-item>
                     </el-collapse>
                 </template>
+                <div class="ac" v-if="!tableData.length">没有数据</div>
             </el-row>
             <el-pagination @current-change="searchFn" :current-page="searchLists.page" @size-change="sizeChange"
             :page-size="searchLists.page_size" :page-sizes="pageSizes" layout="sizes, total, prev, pager, next, jumper" :total="total">
@@ -172,14 +173,19 @@ export default {
         },
         // 列表查询
         searchFn(size){
-            let that = this,
-                url = "/custom/help/index";
-                console.log(size)
             this.searchLists.page = size || 1
+            let that = this,
+                url = "/custom/help/index",
+                option = {
+                    params: this.searchLists
+                };
+            if(this.itemData.app_id === "commonProblem"){
+                // 常见问题
+                url = "/custom/feed/faq"
+            }
+            
             that.loading = true;
-            this.$axios.get(url,{
-                params: this.searchLists
-            }).then((res)=>{
+            that.$axios.get(url,option).then((res)=>{
                 if(res.data.code === 1){
                     that.collapseName = Array.from(new Array(res.data.data.list.length).keys())
                     that.collapseShowData = []
@@ -229,25 +235,63 @@ export default {
     },
     mounted (){
         // 挂载之后执行
-        this.adhibitionArr = [
-            {
-                name: "视频资料",
-                value: "1",
-                type: "video"
-            },
-            {
-                name: "图文资料",
-                value: "2",
-                type: "pic"
-            },
-            {
-                name: "常见问题",
-                value: "3",
-                type: "text"
-            }
-        ]
-        this.dataType = "video"
-        this.searchFn()
+        console.log(this.itemData)
+        let that = this;
+        if(this.itemData.app_id === "commonProblem"){
+            // 常见问题
+            that.loading = true;
+            that.$axios.get("/custom/feed/problem").then((res)=>{
+                if(res.data.code === 1){
+                    that.adhibitionArr = []
+                    res.data.data.map((v)=>{
+                        that.adhibitionArr.push({
+                            name: v.dict_label,
+                            value: v.dict_value,
+                            type: "text"
+                        })
+                    })
+                    that.dataType = "text"
+                    that.searchLists = {
+                        type: that.adhibitionArr[0] && that.adhibitionArr[0].value || "",
+                        page: 1,
+                        page_size: 15
+                    }
+                    that.searchFn()
+                }else{
+                    that.overdueOperation(res.data.code, res.data.msg);
+                }
+                // console.log(that.getSet)
+                that.loading = false;
+            }).catch((err)=>{
+                // console.log(err);
+                that.$message({
+                    message: err,
+                    type: 'error'
+                });
+                that.loading = false;
+            })
+        }else{
+            // 系统助手
+            this.adhibitionArr = [
+                {
+                    name: "视频资料",
+                    value: "1",
+                    type: "video"
+                },
+                {
+                    name: "图文资料",
+                    value: "2",
+                    type: "pic"
+                },
+                {
+                    name: "常见问题",
+                    value: "3",
+                    type: "text"
+                }
+            ]
+            this.dataType = "video"
+            this.searchFn()
+        }
     }
 }
 </script>
