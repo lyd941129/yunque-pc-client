@@ -48,34 +48,34 @@
                 // 日常办公
 				organization: [
 					{
-						app_name: '代办',
+						app_name: '待办',
 						icon: 'icon-agency',
-						app_id: "",
-						type: ''
+						app_id: "agency",
+						type: 'Routine'
 					},
                     {
 						app_name: '已办',
 						icon: 'icon-already',
-						app_id: "",
-						type: ''
+						app_id: "already",
+						type: 'Routine'
 					},
                     {
 						app_name: '消息通知',
 						icon: 'icon-message',
-						app_id: "",
-						type: ''
+						app_id: "message",
+						type: 'Routine'
 					},
                     {
 						app_name: '送阅',
 						icon: 'icon-sendRead',
-						app_id: "",
-						type: ''
+						app_id: "sendRead",
+						type: 'Routine'
 					},
                     {
 						app_name: '我发起的',
 						icon: 'icon-started',
-						app_id: "",
-						type: ''
+						app_id: "started",
+						type: 'Routine'
 					}
 				],
 				// 资料管理

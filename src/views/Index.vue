@@ -83,6 +83,7 @@
 	import Feedback from '../components/DataManagement/Feedback.vue';
 	import FeedbackDetail from '../components/DataManagement/FeedbackDetail.vue';
 	import AdminChnage from '../components/AdminChange.vue'
+	import Routine from '../components/Routine/Routine.vue'
 	
 	import axios from 'axios';
 	export default {
@@ -105,7 +106,8 @@
 			HelpDetail,
 			Feedback,
 			FeedbackDetail,
-			AdminChnage
+			AdminChnage,
+			Routine
 		},
 		data() {
 			return {

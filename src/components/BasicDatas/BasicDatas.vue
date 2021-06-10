@@ -21,7 +21,7 @@
                     <el-button @click="searchFn(1)">确认筛选</el-button>
                 </el-form-item>
             </el-form>
-            <el-row>
+            <el-row class="btn-row">
                 <el-button type="primary" class="btn-blue" @click="addFn">新增</el-button>
                 <el-button type="primary" class="btn-blue" @click="editFn">编辑</el-button>
                 <el-button type="danger" class="btn-red" @click='delFn'>批量删除</el-button>
