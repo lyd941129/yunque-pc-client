@@ -22,12 +22,13 @@
                     action="#"
                     :http-request="uploadFn"
                     :before-remove="beforeRemoveFn"
+                    :on-preview="handlePictureCardPreview"
                     list-type="picture-card"
                     multiple>
                     <i class="el-icon-plus"></i>
                 </el-upload>
-                <el-dialog v-if="itemData.image.length">
-                    <img v-for="(item,index) in itemData.image" :key="index" width="100%" :src="item.url" alt="">
+                <el-dialog :visible.sync="dialogVisible">
+                    <img width="100%" :src="dialogImageUrl" alt="">
                 </el-dialog>
             </el-form-item>
             <el-form-item label="联系方式" prop="phone">
@@ -79,9 +80,16 @@ export default {
                     trigger: 'blur'
                 }]
             },
+            dialogImageUrl: "",
+            dialogVisible: false
         }
     },
     methods: {
+        // 预览
+        handlePictureCardPreview(file) {
+            this.dialogImageUrl = file.url;
+            this.dialogVisible = true;
+        },
         // 上传图片之前
         handleExceed(file){
             // console.log(file)
@@ -141,6 +149,9 @@ export default {
     padding: 20px 0 0;
     .sure-btn{
         width: 140px;
+    }
+    /deep/ .el-dialog__header{
+        display: none;
     }
 }
 </style>
