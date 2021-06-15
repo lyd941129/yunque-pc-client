@@ -19,6 +19,7 @@
                 :default-time="['00:00:00', '23:59:59']"
                 @change="getSearchDataFn"
                 v-model="mainData.value"
+                value-format="yyyy-MM-dd HH:mm:ss"
                 type="daterange"
                 align="right"
                 unlink-panels

@@ -17,17 +17,17 @@
                 <el-table ref="multipleTable" :border='true' :data="tableData" tooltip-effect="dark" style="width: 100%"
                 :select-on-indeterminate='false' height="100%" @row-click="on_select">
                     <el-table-column type="selection" width="55"></el-table-column>
-                    <el-table-column label="发起人" prop="username" align="center"></el-table-column>
+                    <el-table-column label="发起人" prop="apply_uname" align="center"></el-table-column>
                     <el-table-column label="发起时间" prop="create_time" align="center">
                         <template slot-scope="scope">
                             <div>{{scope.row.create_time ? getLocalTime(scope.row.create_time) : ''}}</div>
                         </template>
                     </el-table-column>
-                    <el-table-column label="标题" prop="handle_target" align="center"></el-table-column>
-                    <el-table-column label="审批内容" prop="handle_content" align="center"></el-table-column>
-                    <el-table-column label="状态" prop="is_user_defined" align="center">
+                    <el-table-column label="标题" prop="title" align="center"></el-table-column>
+                    <el-table-column label="审批内容" prop="explain" align="center"></el-table-column>
+                    <el-table-column label="状态" prop="status" align="center">
                         <template slot-scope="scope">
-                            <div>{{scope.row.is_user_defined ? '待办理' : '已办理'}}</div>
+                            <div>{{scope.row.status ? '待办理' : '已办理'}}</div>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -77,19 +77,19 @@
                 <el-table ref="multipleTable" :border='true' :data="tableData" tooltip-effect="dark" style="width: 100%"
                 :select-on-indeterminate='false' height="100%" @row-click="on_select">
                     <el-table-column type="selection" width="55"></el-table-column>
-                    <el-table-column label="发起人" prop="username" align="center"></el-table-column>
-                    <el-table-column label="发起时间" prop="create_time" align="center">
+                    <el-table-column label="申请时间" prop="create_time" align="center">
                         <template slot-scope="scope">
                             <div>{{scope.row.create_time ? getLocalTime(scope.row.create_time) : ''}}</div>
                         </template>
                     </el-table-column>
-                    <el-table-column label="标题" prop="handle_target" align="center"></el-table-column>
-                    <el-table-column label="审批内容" prop="handle_content" align="center"></el-table-column>
-                    <el-table-column label="状态" prop="is_user_defined" align="center">
+                    <el-table-column label="标题" prop="title" align="center"></el-table-column>
+                    <el-table-column label="审批内容" prop="explain" align="center"></el-table-column>
+                    <el-table-column label="状态" prop="status" align="center">
                         <template slot-scope="scope">
-                            <div>{{scope.row.is_user_defined ? '待办理' : '已办理'}}</div>
+                            <div>{{scope.row.status ? '待定' : '待定'}}</div>
                         </template>
                     </el-table-column>
+                    <el-table-column label="当前节点" prop="current_step_title" align="center"></el-table-column>
                 </el-table>
             </template>
         </div>
@@ -109,6 +109,13 @@ export default {
     },
     components: {
         Search
+    },
+    computed: {
+        getLocalTime: function() {// 时间转化
+            return function(nS) {
+                return new Date(parseInt(nS) * 1000).toLocaleString().replace(/:\d{1,2}$/, ' ');
+            }
+        },
     },
     data(){
         return {
@@ -149,19 +156,15 @@ export default {
                     value: "", // 值
                 }
             ],
-            // 检索的条件
-            searchFata:{
-
-            },
             // 总数
             total: 0,
             // 列表查询数据
             searchLists: {
-                dict_type: "", // 查询的类型
                 page: 1,
                 page_size: 15,
-                dict_label: "", // 查询的值
             },
+            // 列表查询地址
+            searchUrl: "",
             // 表格数据
             tableData: [],
             // 翻页的数组
@@ -171,15 +174,14 @@ export default {
     methods: {
         // 检索条件查询
         getSearchFn(data){
-            this.searchFata[data.name] = data.value
-            console.log(this.searchFata)
+            this.searchLists[data.name] = data.value
+            console.log(this.searchLists)
             this.searchFn()
         },
         // 列表查询
         searchFn(size){
             let that = this,
-                url = "/custom/dict/value_list";
-                console.log(size)
+                url = this.searchUrl;
             this.searchLists.page = size || 1
             this.$axios.get(url,{
                 params: this.searchLists
@@ -215,6 +217,57 @@ export default {
     mounted(){
         // 挂载之后
         console.log(this.itemData.app_id)
+        let that = this;
+        switch (that.itemData.app_id) {
+            case "agency": // 待办
+            case "already": // 已办
+                that.searchConfig = [
+                    {
+                        type: "text", // text , time  ,select
+                        name: "apply", // 请求的字段值
+                        label: "发起人", // label
+                        value: "", // 值
+                    },
+                    {
+                        type: "time", // text , time  ,select
+                        name: "apply_time", // 请求的字段值
+                        label: "发起时间", // label
+                        value: "", // 值
+                    }
+                ]
+                that.searchUrl = "/custom/flow/todo";
+                that.searchLists.apply_time = ""
+                that.searchLists.apply = ""
+                that.searchLists.type = 1
+                if(that.itemData.app_id === "already"){
+                    that.searchLists.type = 2
+                }
+                
+                break;
+            case "message":
+
+                break;
+            case "sendRead":
+
+                break;
+            case "started":
+                that.searchConfig = [
+                    {
+                        type: "time", // text , time  ,select
+                        name: "apply_time", // 请求的字段值
+                        label: "发起时间", // label
+                        value: "", // 值
+                    }
+                ]
+                that.searchUrl = "/custom/flow/index";
+                that.searchLists.apply_time = ""
+
+                break;
+        
+            default:
+                break;
+        }
+        this.searchFn()
     }
 }
 </script>
@@ -222,7 +275,8 @@ export default {
 .routine-contenter{
     height: 100%;
     .table-box-btn{
-        height: calc(100% - 216px);
+        height: calc(100% - 154px);
+        // height: calc(100% - 216px);
         margin-top: 20px;
     }
     .el-pagination{
