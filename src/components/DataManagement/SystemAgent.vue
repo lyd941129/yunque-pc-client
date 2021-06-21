@@ -63,7 +63,7 @@
             </el-pagination>
         </div>
         <!-- 弹框 -->
-        <el-dialog class="only-body" title="视频播放" :visible.sync="videoDialog" center width='800px' :close-on-click-modal="false">
+        <el-dialog class="only-body" title="视频播放" :visible.sync="videoDialog" center width='800px'>
             <my-video v-if="videoDialog" class="my-video" :sources="sources" :option="options"></my-video>
         </el-dialog>
     </div>
